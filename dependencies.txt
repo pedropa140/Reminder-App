@@ -1,2 +1,3 @@
 @mui/material @emotion/react @emotion/styled date-fns @fullcalendar/react @fullcalendar/daygrid
 react-icons
+react-router-dom
