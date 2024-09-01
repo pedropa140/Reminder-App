@@ -1,38 +1,49 @@
-.App {
+/* App.css */
+
+.app {
+  font-family: Arial, sans-serif;
   text-align: center;
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh; /* Ensures the background covers the whole viewport height */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.dark-mode {
+  background-color: black;
+  color: #f0f0f0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.navbar {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 10px 20px;
+  background-color: burlywood;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.dark-mode .navbar {
+  background-color: #222; /* Darker background for the navbar in dark mode */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.logo img {
+  height: 40px;
+}
+
+.nav-links {
+  list-style-type: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.theme-toggle {
+  cursor: pointer;
+  font-size: 24px;
 }
