@@ -1,9 +1,13 @@
 // LoginPage.js
 import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import bcrypt from 'bcryptjs';
+
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (event) => {
@@ -34,9 +38,9 @@ const LoginPage = () => {
             margin="normal"
             required
             fullWidth
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
