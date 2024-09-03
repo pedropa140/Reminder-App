@@ -45,24 +45,10 @@ const AboutPage = () => {
             color: darkMode ? '#f0f0f0' : '#000',
             pb: '50px',
             textAlign: 'center',
-            position: 'relative', // Allows for adding overlay or other design elements
-            overflow: 'hidden', // Ensures elements do not overflow the box
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          {/* Optional design element */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: darkMode ? 'linear-gradient(to bottom right, #444, #222)' : 'linear-gradient(to bottom right, #f0f0f0, #fff)',
-              zIndex: -1,
-              opacity: 0.1,
-            }}
-          />
-
           <Typography variant="h4" sx={{ mb: 2, fontWeight: 'bold' }}>
             About Us
           </Typography>
@@ -91,19 +77,21 @@ const AboutPage = () => {
             marginTop: '20px',
             marginLeft: 'auto',
             marginRight: 'auto',
-            border: '1px solid #ddd',
+            border: darkMode ? '1px solid #555' : '1px solid #ddd', // Darker border in dark mode
             borderRadius: '8px',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: darkMode ? '#222' : '#f9f9f9', // Light black background in dark mode
             padding: '20px',
             maxWidth: '600px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow
+            boxShadow: darkMode ? '0 4px 8px rgba(0, 0, 0, 0.3)' : '0 4px 8px rgba(0, 0, 0, 0.1)', // Darker shadow in dark mode
           }}>
             <li style={{
               marginBottom: '10px',
               padding: '10px',
-              borderBottom: '1px solid #ddd',
+              borderBottom: darkMode ? '1px solid #444' : '1px solid #ddd', // Darker border between items in dark mode
               fontSize: '16px',
               lineHeight: '1.5',
+              color: darkMode ? '#f0f0f0' : '#000', // White text in dark mode
+              backgroundColor: darkMode ? '#333' : '#fff', // Slightly different background color for list items in dark mode
               transition: 'background-color 0.3s, color 0.3s', // Smooth transition for hover effect
             }}>
               <strong>Task Management:</strong> Create, edit, and organize tasks with ease.
@@ -111,20 +99,22 @@ const AboutPage = () => {
             <li style={{
               marginBottom: '10px',
               padding: '10px',
-              borderBottom: '1px solid #ddd',
+              borderBottom: darkMode ? '1px solid #444' : '1px solid #ddd',
               fontSize: '16px',
               lineHeight: '1.5',
-              transition: 'background-color 0.3s, color 0.3s',
+              color: darkMode ? '#f0f0f0' : '#000',
+              backgroundColor: darkMode ? '#333' : '#fff',
             }}>
               <strong>Reminders:</strong> Set reminders to ensure you stay on track with your commitments.
             </li>
             <li style={{
               marginBottom: '10px',
               padding: '10px',
-              borderBottom: '1px solid #ddd',
+              borderBottom: darkMode ? '1px solid #444' : '1px solid #ddd',
               fontSize: '16px',
               lineHeight: '1.5',
-              transition: 'background-color 0.3s, color 0.3s',
+              color: darkMode ? '#f0f0f0' : '#000',
+              backgroundColor: darkMode ? '#333' : '#fff',
             }}>
               <strong>Customizable:</strong> Tailor your experience with customizable themes and settings.
             </li>
@@ -133,7 +123,8 @@ const AboutPage = () => {
               padding: '10px',
               fontSize: '16px',
               lineHeight: '1.5',
-              transition: 'background-color 0.3s, color 0.3s',
+              color: darkMode ? '#f0f0f0' : '#000',
+              backgroundColor: darkMode ? '#333' : '#fff',
             }}>
               <strong>User-Friendly Interface:</strong> Navigate effortlessly with a clean and intuitive design.
             </li>
