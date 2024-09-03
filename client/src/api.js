@@ -12,3 +12,9 @@ export const createUser = async(user)=>{
     const response = await axios.post (`${API_URL}/users/createUser`, user);
     return response;
 }
+
+//get user based on email
+export const getUser = async(email)=>{
+    const response = await axios.get(`${API_URL}/users/getUser/${email}`);
+    return response;
+}

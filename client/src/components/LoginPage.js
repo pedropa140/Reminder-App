@@ -1,20 +1,53 @@
 // LoginPage.js
 import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import { getUser} from '../api';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import bcrypt from 'bcryptjs';
 
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+});
+const handleChange = (e) => {
+  setFormData({ ...formData, [e.target.name]: e.target.value });
+};
+  
+const handleSubmit = async (e) => {
+    e.preventDefault();
     // Handle login logic here
-    console.log('Username:', email);
-    console.log('Password:', password);
+    try{
+      if(!formData.netID || !formData.password|| !formData.secpass) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      formData.email = formData.email.trim();
+      formData.password = formData.password.trim();
+      const response = await getUser(formData.email);
+      if (response.status === 200) {
+        const user = response.data;
+        const isPasswordMatch = await bcrypt.compare(formData.password, user.password);
+        if (isPasswordMatch) {
+            sessionStorage.setItem('isUser', formData.netID);
+
+            //sessionStorage.setItem('cachedPassword', formData.password);
+            //navigate(`/user/${formData.netID}`); // Redirect to User.js with netID
+        } else {
+            alert('Incorrect password. Please try again.');
+        }
+    } else {
+        alert('Failed to log in. Please try again.');
+    }
+      
+    }
+    catch(error)
+    {
+      console.error('Error logging in:', error);
+      alert('Failed to log in. Please try again.');
+    }
   };
 
   return (
@@ -39,8 +72,9 @@ const LoginPage = () => {
             required
             fullWidth
             label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name = "email"
+            value={formData.email}
+            onChange={handleChange}
           />
           <TextField
             variant="outlined"
@@ -49,8 +83,9 @@ const LoginPage = () => {
             fullWidth
             type="password"
             label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name = "password"
+            value={formData.password}
+            onChange={handleChange}
           />
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
             Login

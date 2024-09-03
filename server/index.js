@@ -39,6 +39,23 @@ app.post("/users/createUser", async (req, res) => {
     }
 });
 
+
+//get user based on email
+app.get("/users/getUser/:email", async(req, res) => {
+    try {
+        const { email } = req.params;
+        const user = await UserModel.findOne({ email });
+
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to get user", error: error.message });
+    }
+});
+
 app.listen(port, () => {
     console.log("SERVER RUNS")
 });
