@@ -38,3 +38,7 @@ app.post("/users/createUser", async (req, res) => {
       res.status(500).json({message: "Failed to create user", error: error });
     }
 });
+
+app.listen(port, () => {
+    console.log("SERVER RUNS")
+});
