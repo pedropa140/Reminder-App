@@ -4,7 +4,7 @@ import { getUser } from '../api';
 import { Link, useNavigate } from 'react-router-dom';
 import bcrypt from 'bcryptjs';
 import { FaSun, FaMoon } from 'react-icons/fa';
-import logo from '../logo.svg';
+import logo from '../icon.png';
 import '../App.css';
 
 const LoginPage = () => {
@@ -80,11 +80,11 @@ const LoginPage = () => {
             border: '1px solid',
             borderRadius: '12px',
             boxShadow: 3,
-            backgroundColor: darkMode ? '#f0f0f0' : '#fff',
-            color: '#000',
+            backgroundColor: darkMode ? '#333' : '#fff',
+            color: darkMode ? '#f0f0f0' : '#000',
           }}
         >
-          <Typography variant="h5" sx={{ color: darkMode ? 'black' : 'text.primary' }}>
+          <Typography variant="h5" sx={{ color: darkMode ? 'white' : 'text.primary' }}>
             Login
           </Typography>
           <form onSubmit={handleSubmit} style={{ width: '100%', marginTop: '1rem' }}>
@@ -98,10 +98,10 @@ const LoginPage = () => {
               value={formData.email}
               onChange={handleChange}
               InputProps={{
-                style: { color: darkMode ? 'black' : 'text.primary' },
+                style: { color: darkMode ? 'white' : 'black' },
               }}
               InputLabelProps={{
-                style: { color: darkMode ? 'black' : 'text.primary' },
+                style: { color: darkMode ? 'white' : 'black' },
               }}
             />
             <TextField
@@ -115,16 +115,19 @@ const LoginPage = () => {
               value={formData.password}
               onChange={handleChange}
               InputProps={{
-                style: { color: darkMode ? 'black' : 'text.primary' },
+                style: { color: darkMode ? 'white' : 'black' },
               }}
               InputLabelProps={{
-                style: { color: darkMode ? 'black' : 'text.primary' },
+                style: { color: darkMode ? 'white' : 'black' },
               }}
             />
-            <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, backgroundColor: darkMode ? '#007bff' : '#0056b3', color: 'white' }}>
               Login
             </Button>
           </form>
+          <Link to="/signup" style={{ marginTop: '1rem', color: darkMode ? '#007bff' : '#0056b3' }}>
+            Don't have an account? Sign Up
+          </Link>
         </Box>
       </Container>
     </div>

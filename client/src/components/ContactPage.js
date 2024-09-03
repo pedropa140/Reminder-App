@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
-import logo from '../logo.svg';
+import logo from '../icon.png';
 import '../App.css';
 
 const ContactPage = () => {
@@ -51,11 +51,11 @@ const ContactPage = () => {
             border: '1px solid',
             borderRadius: '12px',
             boxShadow: 3,
-            backgroundColor: darkMode ? '#f0f0f0' : '#fff',
-            color: '#000',
+            backgroundColor: darkMode ? '#333' : '#fff',
+            color: darkMode ? '#f0f0f0' : '#000',
           }}
         >
-          <Typography variant="h4" sx={{ mb: 2 }}>
+          <Typography variant="h4" sx={{ mb: 2, color: darkMode ? 'white' : 'text.primary' }}>
             Contact Us
           </Typography>
           <form onSubmit={handleSubmit} style={{ width: '100%' }}>
@@ -69,10 +69,13 @@ const ContactPage = () => {
               onChange={(e) => setName(e.target.value)}
               InputProps={{
                 style: {
-                  backgroundColor: darkMode ? '#ddd' : '#fff', // Slightly darker grey for inputs in dark mode
-                  color: darkMode ? '#000' : '#000',
+                  backgroundColor: darkMode ? '#555' : '#fff', // Adjusted to match dark mode background
+                  color: darkMode ? '#f0f0f0' : '#000', // Adjusted text color for dark mode
                   borderRadius: '8px',
                 },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? '#f0f0f0' : '#000' }, // Adjusted label color for dark mode
               }}
               sx={{ mb: 2 }}
             />
@@ -87,10 +90,13 @@ const ContactPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               InputProps={{
                 style: {
-                  backgroundColor: darkMode ? '#ddd' : '#fff', // Slightly darker grey for inputs in dark mode
-                  color: darkMode ? '#000' : '#000',
+                  backgroundColor: darkMode ? '#555' : '#fff', // Adjusted to match dark mode background
+                  color: darkMode ? '#f0f0f0' : '#000', // Adjusted text color for dark mode
                   borderRadius: '8px',
                 },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? '#f0f0f0' : '#000' }, // Adjusted label color for dark mode
               }}
               sx={{ mb: 2 }}
             />
@@ -106,10 +112,13 @@ const ContactPage = () => {
               onChange={(e) => setMessage(e.target.value)}
               InputProps={{
                 style: {
-                  backgroundColor: darkMode ? '#ddd' : '#fff', // Slightly darker grey for inputs in dark mode
-                  color: darkMode ? '#000' : '#000',
+                  backgroundColor: darkMode ? '#555' : '#fff', // Adjusted to match dark mode background
+                  color: darkMode ? '#f0f0f0' : '#000', // Adjusted text color for dark mode
                   borderRadius: '8px',
                 },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? '#f0f0f0' : '#000' }, // Adjusted label color for dark mode
               }}
               sx={{ mb: 2 }}
             />
@@ -117,14 +126,12 @@ const ContactPage = () => {
               type="submit"
               fullWidth
               variant="contained"
-              color="primary"
-              sx={{ mt: 2, borderRadius: '8px' }}
+              sx={{ mt: 2, borderRadius: '8px', backgroundColor: darkMode ? '#007bff' : '#0056b3', color: 'white' }}
             >
               Send
             </Button>
           </form>
         </Box>
-
       </Container>
     </div>
   );

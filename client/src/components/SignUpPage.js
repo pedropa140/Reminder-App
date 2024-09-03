@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { createUser } from '../api';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import { FaSun, FaMoon } from 'react-icons/fa';
-import logo from '../logo.svg'; // Ensure the path to the logo is correct
-import '../App.css'; // Ensure the path to the CSS file is correct
+import { createUser } from '../api';
+import { Link, useNavigate } from 'react-router-dom';
 import bcrypt from 'bcryptjs';
+import { FaSun, FaMoon } from 'react-icons/fa';
+import logo from '../icon.png';
+import '../App.css';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ const SignUpPage = () => {
   });
 
   const [darkMode, setDarkMode] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -69,7 +69,6 @@ const SignUpPage = () => {
           {darkMode ? <FaSun /> : <FaMoon />}
         </div>
       </nav>
-
       <Container maxWidth="xs">
         <Box
           sx={{
@@ -81,11 +80,13 @@ const SignUpPage = () => {
             border: '1px solid',
             borderRadius: '12px',
             boxShadow: 3,
-            backgroundColor: darkMode ? '#f0f0f0' : '#fff',
-            color: '#000',
+            backgroundColor: darkMode ? '#333' : '#fff',
+            color: darkMode ? '#f0f0f0' : '#000',
           }}
         >
-          <Typography variant="h5">Sign Up</Typography>
+          <Typography variant="h5" sx={{ color: darkMode ? 'white' : 'text.primary' }}>
+            Sign Up
+          </Typography>
           <form onSubmit={handleSubmit} style={{ width: '100%', marginTop: '1rem' }}>
             <TextField
               variant="outlined"
@@ -97,7 +98,10 @@ const SignUpPage = () => {
               value={formData.firstName}
               onChange={handleChange}
               InputProps={{
-                style: { backgroundColor: darkMode ? 'white' : 'inherit', color: darkMode ? 'black' : 'inherit' },
+                style: { color: darkMode ? 'white' : 'black', backgroundColor: darkMode ? '#555' : '#fff' },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? 'white' : 'black' },
               }}
             />
             <TextField
@@ -110,7 +114,10 @@ const SignUpPage = () => {
               value={formData.lastName}
               onChange={handleChange}
               InputProps={{
-                style: { backgroundColor: darkMode ? 'white' : 'inherit', color: darkMode ? 'black' : 'inherit' },
+                style: { color: darkMode ? 'white' : 'black', backgroundColor: darkMode ? '#555' : '#fff' },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? 'white' : 'black' },
               }}
             />
             <TextField
@@ -124,7 +131,10 @@ const SignUpPage = () => {
               value={formData.email}
               onChange={handleChange}
               InputProps={{
-                style: { backgroundColor: darkMode ? 'white' : 'inherit', color: darkMode ? 'black' : 'inherit' },
+                style: { color: darkMode ? 'white' : 'black', backgroundColor: darkMode ? '#555' : '#fff' },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? 'white' : 'black' },
               }}
             />
             <TextField
@@ -138,13 +148,19 @@ const SignUpPage = () => {
               value={formData.password}
               onChange={handleChange}
               InputProps={{
-                style: { backgroundColor: darkMode ? 'white' : 'inherit', color: darkMode ? 'black' : 'inherit' },
+                style: { color: darkMode ? 'white' : 'black', backgroundColor: darkMode ? '#555' : '#fff' },
+              }}
+              InputLabelProps={{
+                style: { color: darkMode ? 'white' : 'black' },
               }}
             />
-            <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, backgroundColor: darkMode ? '#007bff' : '#0056b3', color: 'white' }}>
               Sign Up
             </Button>
           </form>
+          <Link to="/login" style={{ marginTop: '1rem', color: darkMode ? '#007bff' : '#0056b3' }}>
+            Already have an account? Log In
+          </Link>
         </Box>
       </Container>
     </div>

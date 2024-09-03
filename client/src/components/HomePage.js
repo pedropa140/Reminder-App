@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { FaSun, FaMoon } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { FaSun, FaMoon } from 'react-icons/fa';
+import logo from '../icon.png';
 import '../App.css';
-import logo from '../logo.svg';
 
-
-function HomePage() {
+const HomePage = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   const toggleDarkMode = () => {
@@ -26,11 +25,15 @@ function HomePage() {
           <li><Link to="/contact">CONTACT</Link></li>
         </ul>
         <div className="theme-toggle" onClick={toggleDarkMode}>
-          {darkMode ? <FaSun /> : <FaMoon />}
+          {darkMode ? <FaSun size={24} /> : <FaMoon size={24} />}
         </div>
       </nav>
-      <main>
-        <h1>MAIN</h1>
+      <main className={`hero-section ${darkMode ? 'dark-hero-content' : ''}`}>
+        <div className={`hero-content ${darkMode ? 'dark-hero-box' : ''}`}>
+          <h1>Welcome to ReminderApp</h1>
+          <p>Your personal assistant to stay organized and on top of your tasks.</p>
+          <Link to="/signup" className="cta-button">Get Started</Link>
+        </div>
       </main>
     </div>
   );

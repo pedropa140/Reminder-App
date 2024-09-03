@@ -1,51 +1,55 @@
-/* App.css */
-
+/* General App Styles */
 .app {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: white;
-  color: black;
-  transition: background-color 0.3s, color 0.3s;
-  min-height: 100vh; /* Ensures the background covers the whole viewport height */
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f4f8;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark-mode {
-  background-color: black;
-  color: #f0f0f0;
+  background-color: #121212;
+  color: #e0e0e0; /* Light gray text color for dark mode */
 }
 
+/* Navbar Styles */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   transition: background-color 0.3s ease;
 }
 
-.navbar.dark-mode {
+.dark-mode .navbar {
   background-color: #333;
-  border-bottom: 1px solid #444;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .logo img {
-  height: 40px;
+  height: 50px;
 }
 
 .nav-links {
-  list-style: none;
   display: flex;
-  gap: 1rem;
+  list-style: none;
+  margin: 0;
 }
 
 .nav-links li {
-  display: inline;
+  margin: 0 1rem;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: black !important;
+  color: black;
   font-weight: bold;
   transition: color 0.3s ease;
 }
@@ -55,185 +59,180 @@
 }
 
 .dark-mode .nav-links a {
-  color: #e0e0e0;
+  color: #e0e0e0; /* Light gray text color for links in dark mode */
 }
 
-.dark-mode .nav-links a:hover {
-  color: #3399ff;
-}
-
+/* Theme Toggle Styles */
 .theme-toggle {
-  color: black !important; /* Ensure the icon color is black at all times */
   cursor: pointer;
   font-size: 1.5rem;
   transition: color 0.3s ease;
 }
 
-.theme-toggle:hover {
-  color: #007bff; /* Optional: change color on hover */
+.dark-mode .theme-toggle {
+  color: white !important; /* Icon color in dark mode */
 }
 
-.main {
+.app .theme-toggle {
+  color: black; /* Icon color in light mode */
+}
+
+/* Hero Section Styles */
+.hero-section {
   flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
   text-align: center;
-  transition: background-color 0.3s ease;
+  padding: 4rem 2rem;
+  background-image: linear-gradient(to bottom right, #e0e7ff, #f5f5f5);
+  transition: background-image 0.3s ease, color 0.3s ease;
 }
 
-.dark-mode .main {
-  background-color: #121212;
-  color: #e0e0e0;
+.dark-mode .hero-section {
+  background-image: linear-gradient(to bottom right, #333, #444);
 }
 
-.about-content {
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 0 auto;
-  transition: background-color 0.3s ease;
+.hero-content {
+  max-width: 700px;
+  padding: 3rem 2rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.dark-mode .about-content {
-  background-color: #2a2a2a;
-  color: #e0e0e0;
+.dark-mode .hero-content {
+  background-color: #222; /* Dark background for hero content */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
 
-.about-title {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.about-description {
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-
-/* 
-html, body {
-  height: 100%;
+.hero-content h1 {
   margin: 0;
-  padding: 0;
-  transition: background-color 0.3s ease;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
+  font-size: 3rem;
   color: #333;
+  line-height: 1.2;
+  font-weight: 700;
 }
 
-body.dark-mode {
-  background-color: #121212;
-  color: #e0e0e0;
+.dark-mode .hero-content h1 {
+  color: #e0e0e0; /* Light gray text color for headings in dark mode */
 }
 
-.app {
-  min-height: 100%;
+.hero-content p {
+  font-size: 1.5rem;
+  color: #555;
+  margin: 1.5rem 0;
+  line-height: 1.6;
+}
+
+.dark-mode .hero-content p {
+  color: #ccc; /* Light gray text color for paragraphs in dark mode */
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cta-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.dark-mode .cta-button {
+  background-color: #0056b3;
+}
+
+.dark-mode .cta-button:hover {
+  background-color: #003d7a;
+}
+
+/* SignUpPage Specific Styles */
+.signup-container {
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s ease;
-}
-
-.dark-mode .app {
-  background-color: #121212;
-  color: #e0e0e0;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
-  transition: background-color 0.3s ease;
-}
-
-.navbar.dark-mode {
-  background-color: #333;
-  border-bottom: 1px solid #444;
-}
-
-.logo img {
-  height: 40px;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links li {
-  display: inline;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-  transition: color 0.3s ease;
-}
-
-.nav-links a:hover {
-  color: #007bff;
-}
-
-.dark-mode .nav-links a {
-  color: #e0e0e0;
-}
-
-.dark-mode .nav-links a:hover {
-  color: #3399ff;
-}
-
-.theme-toggle {
-  cursor: pointer;
-}
-
-.main {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-top: 2rem;
   padding: 2rem;
-  text-align: center;
-  transition: background-color 0.3s ease;
-}
-
-.dark-mode .main {
-  background-color: #121212;
-  color: #e0e0e0;
-}
-
-.about-content {
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 8px;
+  border: 1px solid;
+  border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 0 auto;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dark-mode .signup-container {
+  background-color: #333;
+  border-color: #555;
+}
+
+.signup-container .MuiTypography-root {
+  color: #333;
+}
+
+.dark-mode .signup-container .MuiTypography-root {
+  color: #e0e0e0;
+}
+
+.signup-container .MuiTextField-root {
+  margin-top: 1rem;
+}
+
+.signup-container .MuiButton-root {
+  margin-top: 1.5rem;
+}
+
+/* About Page Styles */
+.about-content {
+  padding: 4rem 2rem;
+  text-align: center;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem;
 }
 
 .dark-mode .about-content {
-  background-color: #2a2a2a;
-  color: #e0e0e0;
+  background-color: #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .about-title {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.dark-mode .about-title {
+  color: #e0e0e0;
 }
 
 .about-description {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto;
 }
- */
+
+.dark-mode .about-description {
+  color: #ccc;
+}
+
+@media (max-width: 768px) {
+  .about-title {
+    font-size: 2rem;
+  }
+
+  .about-description {
+    font-size: 1rem;
+  }
+}
