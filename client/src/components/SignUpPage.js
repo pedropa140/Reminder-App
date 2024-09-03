@@ -61,7 +61,7 @@ const SignUpPage = () => {
             margin="normal"
             required
             fullWidth
-            label="Username"
+            label="First Name"
             name = "firstName"
             value={formData.firstName}
             onChange={handleChange}
@@ -71,7 +71,7 @@ const SignUpPage = () => {
             margin="normal"
             required
             fullWidth
-            label="Username"
+            label="Last Name"
             name = "lastName"
             value={formData.lastName}
             onChange={handleChange}
