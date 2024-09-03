@@ -1,6 +1,9 @@
 // SignUpPage.js
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { createUser} from '../api';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import bcrypt from 'bcryptjs';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +12,6 @@ const SignUpPage = () => {
     email: '',
     password: ''
 });
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,7 +33,8 @@ const SignUpPage = () => {
     if (response.status===200)
     {
         alert('User created successfully!');
-        navigate('/login');
+        //navigate('/login');
+        window.location.href = '/login';
     } else{
         alert('Failed to create user. Please try again.');
     }
@@ -59,7 +62,18 @@ const SignUpPage = () => {
             required
             fullWidth
             label="Username"
-            value={username}
+            name = "firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            label="Username"
+            name = "lastName"
+            value={formData.lastName}
             onChange={handleChange}
           />
           <TextField
@@ -69,7 +83,8 @@ const SignUpPage = () => {
             fullWidth
             type="email"
             label="Email"
-            value={email}
+            name = "email"
+            value={formData.email}
             onChange={handleChange}
           />
           <TextField
@@ -79,7 +94,8 @@ const SignUpPage = () => {
             fullWidth
             type="password"
             label="Password"
-            value={password}
+            name = "password"
+            value={formData.password}
             onChange={handleChange}
           />
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>

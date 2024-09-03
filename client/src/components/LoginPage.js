@@ -13,7 +13,7 @@ const LoginPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     // Handle login logic here
-    console.log('Username:', username);
+    console.log('Username:', email);
     console.log('Password:', password);
   };
 
