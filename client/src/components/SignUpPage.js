@@ -3,16 +3,38 @@ import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
 
 const SignUpPage = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+});
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle signup logic here
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+        alert('Please fill in all fields.');
+        return;
+    }
+    const hashedPassword = await bcrypt.hash(formData.password, 10); // 10 is the number of salt rounds
+    formData.password = hashedPassword;
+    formData.email = formData.email.trim();
+    formData.firstName = formData.firstName.trim();
+    formData.lastName = formData.lastName.trim();
+
+
+    const response = await createUser(formData);
+    if (response.status===200)
+    {
+        alert('User created successfully!');
+        navigate('/login');
+    } else{
+        alert('Failed to create user. Please try again.');
+    }
   };
 
   return (
@@ -38,7 +60,7 @@ const SignUpPage = () => {
             fullWidth
             label="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleChange}
           />
           <TextField
             variant="outlined"
@@ -48,7 +70,7 @@ const SignUpPage = () => {
             type="email"
             label="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleChange}
           />
           <TextField
             variant="outlined"
@@ -58,7 +80,7 @@ const SignUpPage = () => {
             type="password"
             label="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
           />
           <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>
             Sign Up

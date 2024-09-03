@@ -24,3 +24,17 @@ app.get("/users/getUsers", async (req, res) => {
         res.status(500).json({ message: "Failed to fetch users", error: error.message });
     }
 });
+
+//creates a new user
+app.post("/users/createUser", async (req, res) => {  
+    try {
+      const user = req.body;
+      //console.log(user);
+
+      const newUser = new UserModel(user);
+      await newUser.save();
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({message: "Failed to create user", error: error });
+    }
+});
