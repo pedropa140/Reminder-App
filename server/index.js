@@ -40,7 +40,7 @@ app.post("/users/createUser", async (req, res) => {
 });
 
 
-//get user based on email
+//get user based on email  (using this for all retrivals will probably make life easier)
 app.get("/users/getUser/:email", async(req, res) => {
     try {
         const { email } = req.params;
@@ -55,6 +55,27 @@ app.get("/users/getUser/:email", async(req, res) => {
         res.status(500).json({ message: "Failed to get user", error: error.message });
     }
 });
+
+
+//set a goal
+app.put("users/setGoal", async (req, res)=> {
+    try{
+        const email = req.params.email;
+        const goal = req.params.goal;
+        const user = await UserModel.findbyIdAndUpdate(email, {activeGoal: goal}, {new:true});
+        if (user){
+            res.status(200).json({message: "Goal updated successfully"});
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+
+
+    }catch(error){
+        res.status(500).json({ message: "Failed to update meeting attendance number", error: error.message });
+    }
+});
+
+
 
 app.listen(port, () => {
     console.log("SERVER RUNS")

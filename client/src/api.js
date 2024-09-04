@@ -18,3 +18,9 @@ export const getUser = async(email)=>{
     const response = await axios.get(`${API_URL}/users/getUser/${email}`);
     return response;
 }
+
+//set goal for user
+export const setGoal = async(goal)=>{
+    const response = await axios.post(`${API_URL}/users/setGoal`, goal);
+    return response;
+}
