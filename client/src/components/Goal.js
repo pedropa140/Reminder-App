@@ -5,32 +5,49 @@ import logo from '../icon.png';
 import '../App.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
-import { setGoal, getGoals, updateTaskStatus, updateGoalStatus } from '../api'; // Ensure updateGoalStatus is imported
-
+import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals } from '../api';
 
 const GoalPage = () => {
   const [goal, setGoalTitle] = useState('');
   const [tasks, setTasks] = useState(['']);
-  const [fetchedGoals, setFetchedGoals] = useState([]); // Store all fetched goals
-  const email = sessionStorage.getItem('userEmail'); // Get user email from session
+  const [fetchedGoals, setFetchedGoals] = useState([]);
+  const [completedGoals, setCompletedGoals] = useState([]);
+  const email = sessionStorage.getItem('userEmail');
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
 
-  useEffect(() => {
+  const fetchGoalsAndCompletedGoals = () => {
     if (email) {
+      console.log(`Fetching goals for user with email: ${email}`);
+      
       getGoals(email)
         .then(response => {
-          console.log("Fetched Goals:", response); // Add logging to check the response
-          setFetchedGoals(response.data.activeGoals || []); // Ensure correct path to data
+          console.log("Fetched Goals:", response);
+          const activeGoals = response.data?.activeGoals || [];
+          setFetchedGoals(activeGoals.map(goal => ({
+            ...goal,
+            activeTasks: goal.activeTasks || []
+          })));
         })
         .catch(error => {
           console.error("Error fetching goals:", error);
         });
-    } else {
-      navigate('/logged-out', { replace: true });
+
+      getCompletedGoals(email)
+        .then(response => {
+          console.log("Fetched Completed Goals:", response);
+          setCompletedGoals(response.data?.completedGoals || []);
+        })
+        .catch(error => {
+          console.error("Error fetching completed goals:", error);
+        });
     }
-  }, [email, navigate]);
+  };
+
+  useEffect(() => {
+    fetchGoalsAndCompletedGoals();
+  }, [email]);
 
   const handleAddTask = () => {
     setTasks([...tasks, '']);
@@ -47,45 +64,39 @@ const GoalPage = () => {
     const task = updatedGoals[goalIndex].activeTasks[taskIndex];
     const updatedCompletedStatus = !task.completed;
     task.completed = updatedCompletedStatus;
-  
-    // Update the state
+
     setFetchedGoals(updatedGoals);
-  
-    // Update the status in MongoDB
+
     const goalTitle = updatedGoals[goalIndex].title;
     const taskName = task.name;
-  
+
     updateTaskStatus(email, goalTitle, taskName, updatedCompletedStatus)
-      .then(() => {
-        console.log('Task status updated successfully');
-  
-        // Check if all tasks are completed
-        const allTasksCompleted = updatedGoals[goalIndex].activeTasks.every(t => t.completed);
-  
-        if (allTasksCompleted) {
-          // Set the goal as completed and update MongoDB
-          const updatedGoal = { ...updatedGoals[goalIndex], completed: true };
-          const updatedUserGoals = [...fetchedGoals];
-          updatedUserGoals[goalIndex] = updatedGoal;
-  
-          setFetchedGoals(updatedUserGoals);
-  
-          // Call the backend to update the goal status
-          updateGoalStatus(email, goalTitle, true)
-            .then(() => {
-              console.log('Goal status updated successfully');
-              window.location.reload(); // Refresh the page
-            })
-            .catch(error => {
-              console.error('Error updating goal status:', error);
-            });
-        }
-      })
-      .catch(error => {
-        console.error('Error updating task status:', error);
-      });
+        .then(() => {
+            console.log('Task status updated successfully');
+            
+            const allTasksCompleted = updatedGoals[goalIndex].activeTasks.every(t => t.completed);
+
+            if (allTasksCompleted) {
+                const updatedGoal = { ...updatedGoals[goalIndex], completed: true };
+                const updatedUserGoals = [...fetchedGoals];
+                updatedUserGoals[goalIndex] = updatedGoal;
+
+                setFetchedGoals(updatedUserGoals);
+
+                updateGoalStatus(email, goalTitle, true)
+                    .then(() => {
+                        console.log('Goal status updated successfully');
+                        fetchGoalsAndCompletedGoals(); // Refetch goals and completed goals
+                    })
+                    .catch(error => {
+                        console.error('Error updating goal status:', error);
+                    });
+            }
+        })
+        .catch(error => {
+            console.error('Error updating task status:', error);
+        });
   };
-  
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -105,7 +116,7 @@ const GoalPage = () => {
     setPopupOpen(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
     }
@@ -119,8 +130,8 @@ const GoalPage = () => {
             title: goal,
             activeTasks: tasks.map(t => ({ name: t, completed: false }))
           }]);
-          setGoalTitle(''); // Clear goal input
-          setTasks(['']); // Clear tasks input
+          setGoalTitle('');
+          setTasks(['']);
         })
         .catch(error => {
           console.error("Error setting goal:", error);
@@ -146,7 +157,7 @@ const GoalPage = () => {
         </div>
       </nav>
       <Container>
-        <Box>
+        <Box mt={4}>
           <Typography variant="h4">Set Your Goal</Typography>
           <TextField
             label="Goal Title"
@@ -171,37 +182,60 @@ const GoalPage = () => {
         </Box>
 
         {/* Display all fetched goals */}
-        {fetchedGoals.length > 0 && (
+        {fetchedGoals.length > -1 ? (
           <Box mt={4}>
             <Typography variant="h5">Your Goals</Typography>
             {fetchedGoals.map((goal, goalIndex) => (
               <Box key={goalIndex} mb={2}>
                 <Typography variant="h6">{goal.title}</Typography>
                 <ul style={{ listStyleType: 'none', padding: 0 }}>
-                  {goal.activeTasks.map((task, taskIndex) => (
-                    <li key={taskIndex}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={task.completed}
-                            onChange={() => handleTaskCompletionChange(goalIndex, taskIndex)}
-                          />
-                        }
-                        label={task.name}
-                      />
-                    </li>
-                  ))}
+                  {goal.activeTasks && Array.isArray(goal.activeTasks) ? (
+                    goal.activeTasks.map((task, taskIndex) => (
+                      <li key={taskIndex}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={task.completed}
+                              onChange={() => handleTaskCompletionChange(goalIndex, taskIndex)}
+                            />
+                          }
+                          label={task.name}
+                        />
+                      </li>
+                    ))
+                  ) : (
+                    <Typography variant="body2">No tasks available</Typography>
+                  )}
                 </ul>
               </Box>
             ))}
           </Box>
+        ) : (
+          <Typography variant="body1">No active goals available</Typography>
+        )}
+
+        {/* Display completed goals */}
+        {completedGoals.length > -1 ? (
+          <Box mt={4}>
+            <Typography variant="h5">Completed Goals</Typography>
+            {completedGoals.map((goal, index) => (
+              <Box key={index} mb={2}>
+                <Typography variant="h6">{goal.title}</Typography>
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          <Typography variant="body1">No completed goals available</Typography>
         )}
       </Container>
-      <LogoutPopup
-        open={popupOpen}
-        onClose={handleClosePopup}
-        onConfirm={handleConfirmLogout}
-      />
+
+      {popupOpen && (
+        <LogoutPopup
+          open={popupOpen}
+          onConfirm={handleConfirmLogout}
+          onClose={handleClosePopup}
+        />
+      )}
     </div>
   );
 };

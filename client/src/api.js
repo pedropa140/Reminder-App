@@ -1,63 +1,72 @@
 import axios from 'axios';
+
 const API_URL = 'http://localhost:5000';
 
-//get all Users
+// Get all users
 export const getUsers = async () => {
     const response = await axios.get(`${API_URL}/users/getUsers`);
     return response;
 }
 
-//create a User
+// Create a user
 export const createUser = async (user) => {
     const response = await axios.post(`${API_URL}/users/createUser`, user);
     return response;
 }
 
-//get user based on email
+// Get user based on email
 export const getUser = async (email) => {
     const response = await axios.get(`${API_URL}/users/getUser/${email}`);
     return response;
 }
 
-//set goal for user
+// Set goal for user
 export const setGoal = async (goal) => {
     console.log(goal);
     const response = await axios.put(`${API_URL}/users/setGoal`, goal);
     return response;
 }
 
-//get goal for user (fetches a single goal)
-export const getGoal = async (email) => {
-    const response = await axios.get(`${API_URL}/users/getGoal/${email}`);
-    return response;
-}
-
-//get all goals for user (fetches all goals)
+// Get goals for user
 export const getGoals = async (email) => {
     const response = await axios.get(`${API_URL}/users/getGoals/${email}`);
     return response;
 }
 
-export const updateTaskStatus = (email, goalTitle, taskName, completed) => {
-    return axios.put(`${API_URL}/users/updateTaskStatus`, {
+// Update task status
+export const updateTaskStatus = async (email, goalTitle, taskName, completed) => {
+    const response = await axios.put(`${API_URL}/users/updateTaskStatus`, {
         email,
         goalTitle,
         taskName,
         completed
     });
+    return response;
 };
 
-export const updateGoalStatus = (email, goalTitle, completed) => {
-    return fetch(`http://localhost:5000/users/updateGoalStatus`, { 
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, goalTitle, completed })
-    })
-    .then(response => response.json())
-    .catch(error => {
-      console.error('Error updating goal status:', error);
-    });
-  };
-  
+// Update goal status
+export const updateGoalStatus = async (email, goalTitle, completed) => {
+    try {
+        const response = await axios.put(`${API_URL}/users/updateGoalStatus`, {
+            email,
+            goalTitle,
+            completed
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating goal status:', error);
+        throw error;
+    }
+};
+
+
+// Get completed goals for user
+export const getCompletedGoals = async (email) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/getCompletedGoals/${email}`);
+        return response;
+    } catch (error) {
+        console.error("Error in getCompletedGoals:", error);
+        throw error;
+    }
+};

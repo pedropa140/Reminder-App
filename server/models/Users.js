@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -18,7 +17,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true,
         validate: {
-            validator: function(v) {
+            validator: function (v) {
                 return /^([\w-.]+@([\w-]+.)+[\w-]{2,4})?$/.test(v);
             },
             message: props => `${props.value} is not a valid email.`
@@ -30,7 +29,7 @@ const UserSchema = new mongoose.Schema({
         minlength: 8,
         maxlength: 100
     },
-    activeGoal: [{
+    activeGoal: {
         title: {
             type: String,
             minlength: 1,
@@ -42,29 +41,32 @@ const UserSchema = new mongoose.Schema({
             default: false
         },
         activeTasks: [{
-            name: { 
+            name: {
                 type: String,
                 required: true
             },
-            completed: { 
+            completed: {
                 type: Boolean,
                 default: false
             }
         }]
-    }],
-    completedGoals: [{
-        title: {
-            type: String,
-            minlength: 1,
-            maxlength: 40,
-            default: "No Goal"
+    },
+    completedGoals: [
+        {
+            title: {
+                type: String,
+                minlength: 1,
+                maxlength: 40,
+                default: "No Goal"
+            }
         }
-    }],
+    ],
     pair: {
         type: Boolean,
         default: false
     }
-});
 
-const UserModel = mongoose.model("User", UserSchema);
-module.exports = UserModel;
+})
+
+const UserModel = mongoose.model("users", UserSchema);
+module.exports = UserModel
