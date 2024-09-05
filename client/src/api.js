@@ -70,3 +70,17 @@ export const getCompletedGoals = async (email) => {
         throw error;
     }
 };
+
+
+//get pair information for user
+export const getPair = async(email) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/getPair/${email}`);
+        return response;
+    } catch (error) {
+        console.error("Error in getPair:", error);
+        throw error;
+    }
+}
+
+
