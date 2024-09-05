@@ -145,7 +145,6 @@ const AboutPage = () => {
         </Box>
       </Container>
 
-      {/* Additional section for creators */}
       <Container maxWidth="md" sx={{ mb: '50px' }}>
         <Box
           sx={{
