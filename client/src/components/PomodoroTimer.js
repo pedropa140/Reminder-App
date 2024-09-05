@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Box, Typography, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Container, Box, Typography, Button, TextField } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../icon.png';
 import '../App.css';
+import TimerAlertPopup from './TimerAlertPopup';
+import LogoutPopup from './LogoutPopup'; // Import LogoutPopup
 
 const PomodoroTimer = () => {
     const [workDuration, setWorkDuration] = useState(25);
@@ -13,7 +15,9 @@ const PomodoroTimer = () => {
     const [isBreak, setIsBreak] = useState(false);
     const [openAlert, setOpenAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+    const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const alarmSound = useRef(null);
+    const navigate = useNavigate(); // Hook for navigation
 
     const [darkMode, setDarkMode] = useState(false);
 
@@ -86,6 +90,27 @@ const PomodoroTimer = () => {
         setIsActive(false);
     };
 
+    // Function to pause the timer and open the logout popup
+    const handleLogoutClick = () => {
+        if (isActive) {
+            setIsActive(false); // Pause the timer
+        }
+        setLogoutPopupOpen(true);
+    };
+
+    const handleConfirmLogout = () => {
+        sessionStorage.clear();
+        setLogoutPopupOpen(false);
+        navigate('/logged-out', { replace: true });
+    };
+
+    const handleCloseLogoutPopup = () => {
+        setLogoutPopupOpen(false);
+        if (!isActive && time > 0) {
+            setIsActive(true); // Resume the timer if it was paused
+        }
+    };
+
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const remainderSeconds = seconds % 60;
@@ -102,6 +127,7 @@ const PomodoroTimer = () => {
                     <li><Link to="/user">HOME</Link></li>
                     <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
                     <li><Link to="/user/contact">CONTACT</Link></li>
+                    <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
                 </ul>
                 <div className="theme-toggle" onClick={toggleDarkMode}>
                     {darkMode ? <FaSun /> : <FaMoon />}
@@ -166,27 +192,18 @@ const PomodoroTimer = () => {
                         Reset
                     </Button>
 
-                    <Dialog
+                    <TimerAlertPopup
                         open={openAlert}
-                        onClose={handleCancelAlert} // Use handleCancelAlert to stop the timer if clicked outside
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        <DialogTitle id="alert-dialog-title">{"Timer Alert"}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                {alertMessage}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseAlert} color="primary">
-                                OK
-                            </Button>
-                            <Button onClick={handleCancelAlert} color="secondary">
-                                Cancel
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                        onClose={handleCancelAlert}
+                        alertMessage={alertMessage}
+                        onConfirm={handleCloseAlert}
+                    />
+
+                    <LogoutPopup
+                        open={logoutPopupOpen}
+                        onClose={handleCloseLogoutPopup}
+                        onConfirm={handleConfirmLogout}
+                    />
                 </Box>
             </Container>
         </div>
