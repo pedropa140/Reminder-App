@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
         minlength: 8,
         maxlength: 100
     },
-    activeGoal: {
+    activeGoal: [{
         title: {
             type: String,
             minlength: 1,
@@ -50,7 +50,7 @@ const UserSchema = new mongoose.Schema({
                 default: false
             }
         }]
-    },
+    }],
     completedGoals: [
         {
             title: {
