@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const UserSchema = new mongoose.Schema ({
+
+const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
@@ -17,10 +18,10 @@ const UserSchema = new mongoose.Schema ({
         required: true,
         unique: true,
         validate: {
-          validator: function(v) {
-            return /^([\w-.]+@([\w-]+.)+[\w-]{2,4})?$/.test(v);
-          },
-          message: props =>`${props.value} is not a valid email.`
+            validator: function(v) {
+                return /^([\w-.]+@([\w-]+.)+[\w-]{2,4})?$/.test(v);
+            },
+            message: props => `${props.value} is not a valid email.`
         }
     },
     password: {
@@ -29,14 +30,14 @@ const UserSchema = new mongoose.Schema ({
         minlength: 8,
         maxlength: 100
     },
-    activeGoal:{
+    activeGoal: [{
         title: {
             type: String,
             minlength: 1,
             maxlength: 40,
             default: "No Goal"
         },
-        completed:{
+        completed: {
             type: Boolean,
             default: false
         },
@@ -44,28 +45,26 @@ const UserSchema = new mongoose.Schema ({
             name: { 
                 type: String,
                 required: true
-              },
-              completed: { 
+            },
+            completed: { 
                 type: Boolean,
-                default: false }
+                default: false
+            }
         }]
-    },
-    completedGoals: [
-        {
-            title : {
+    }],
+    completedGoals: [{
+        title: {
             type: String,
             minlength: 1,
             maxlength: 40,
             default: "No Goal"
         }
-    }
-    ],
+    }],
     pair: {
-        type:Boolean,
-        default:false
+        type: Boolean,
+        default: false
     }
+});
 
-})
-
-const UserModel = mongoose.model("users", UserSchema);
-module.exports = UserModel
+const UserModel = mongoose.model("User", UserSchema);
+module.exports = UserModel;

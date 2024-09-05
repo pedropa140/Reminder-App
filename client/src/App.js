@@ -22,31 +22,39 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/contact" element={<ContactPage_nonSignedIn />} />
         <Route path="/logged-out" element={<LoggedOutPage />} />
-        <Route path="/goal" element={<GoalPage/>} />
 
-        <Route 
-          path="/user" 
+        <Route
+          path="/user"
           element={
             <ProtectedRoute>
               <UserPage />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/user/pomodoro" 
+        <Route
+          path="/user/pomodoro"
           element={
             <ProtectedRoute>
               <PomodoroTimer />
             </ProtectedRoute>
-          } 
+          }
         />
-        <Route 
-          path="/user/contact" 
+        <Route
+          path="/user/contact"
           element={
             <ProtectedRoute>
               <ContactPage_SignedIn />
             </ProtectedRoute>
-          } 
+          }
+        />
+
+        <Route
+          path="/user/goal"
+          element={
+            <ProtectedRoute>
+              <GoalPage />
+            </ProtectedRoute>
+          }
         />
 
         <Route path="*" element={<Navigate to="/" replace />} />

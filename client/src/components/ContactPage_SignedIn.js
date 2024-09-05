@@ -1,5 +1,5 @@
 import React , { useState, useEffect, useRef } from 'react';
-import { Container, Box, Typography, Button, TextField } from '@mui/material';
+import { Container, Box, Typography, Button, TextField, IconButton } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
@@ -53,6 +53,7 @@ const ContactPage_SignedIn = () => {
                 </div>
                 <ul className="nav-links">
                     <li><Link to="/user">HOME</Link></li>
+                    <li><Link to="/user/goal">TASKS</Link></li>
                     <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
                     <li><Link to="/user/contact">CONTACT</Link></li>
                     <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>

@@ -46,6 +46,7 @@ const UserPage = () => {
         </div>
         <ul className="nav-links">
           <li><Link to="/user">HOME</Link></li>
+          <li><Link to="/user/goal">TASKS</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
           <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
