@@ -58,12 +58,21 @@ app.get("/users/getUser/:email", async(req, res) => {
 
 
 //set a goal
-app.put("users/setGoal", async (req, res)=> {
+app.put("/users/setGoal", async (req, res)=> {
     try{
         const email = req.params.email;
         const goal = req.params.goal;
-        const user = await UserModel.findbyIdAndUpdate(email, {activeGoal: goal}, {new:true});
-        if (user){
+        const tasks = req.params.tasks;
+        const user = await UserModel.findOneAndUpdate(
+            { email },
+            { 
+                activeGoal: {
+                    title: goal,
+                    activeTasks: tasks.map(task => ({ name: task, completed: false }))
+                }
+            },
+            { new: true }
+        );        if (user){
             res.status(200).json({message: "Goal updated successfully"});
         } else {
             res.status(404).json({ message: "User not found" });
@@ -74,6 +83,25 @@ app.put("users/setGoal", async (req, res)=> {
         res.status(500).json({ message: "Failed to update meeting attendance number", error: error.message });
     }
 });
+
+//get a goal
+app.get("/users/getGoal/:email", async(req, res) => {
+    try {
+        const { email } = req.params;
+        console.log(email);
+        const user = await UserModel.findOne({ email });
+        if (user)
+        {
+            const goal = user.activeGoal;
+            res.status(200).json({goal});
+        } else {
+            res.status(404).json({message: "User not found"});
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: "Failed to get meeting reset number", error: error.message });
+    }
+})
 
 
 

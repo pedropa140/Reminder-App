@@ -59,7 +59,11 @@ const UserSchema = new mongoose.Schema ({
             default: "No Goal"
         }
     }
-    ]
+    ],
+    pair: {
+        type:Boolean,
+        default:false
+    }
 
 })
 
