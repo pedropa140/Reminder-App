@@ -5,7 +5,7 @@ import { FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../icon.png';
 import '../App.css';
 
-const ContactPage = () => {
+const ContactPage_nonSignedIn = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -69,13 +69,13 @@ const ContactPage = () => {
               onChange={(e) => setName(e.target.value)}
               InputProps={{
                 style: {
-                  backgroundColor: darkMode ? '#555' : '#fff', // Adjusted to match dark mode background
-                  color: darkMode ? '#f0f0f0' : '#000', // Adjusted text color for dark mode
+                  backgroundColor: darkMode ? '#555' : '#fff',
+                  color: darkMode ? '#f0f0f0' : '#000',
                   borderRadius: '8px',
                 },
               }}
               InputLabelProps={{
-                style: { color: darkMode ? '#f0f0f0' : '#000' }, // Adjusted label color for dark mode
+                style: { color: darkMode ? '#f0f0f0' : '#000' },
               }}
               sx={{ mb: 2 }}
             />
@@ -90,13 +90,13 @@ const ContactPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               InputProps={{
                 style: {
-                  backgroundColor: darkMode ? '#555' : '#fff', // Adjusted to match dark mode background
-                  color: darkMode ? '#f0f0f0' : '#000', // Adjusted text color for dark mode
+                  backgroundColor: darkMode ? '#555' : '#fff',
+                  color: darkMode ? '#f0f0f0' : '#000',
                   borderRadius: '8px',
                 },
               }}
               InputLabelProps={{
-                style: { color: darkMode ? '#f0f0f0' : '#000' }, // Adjusted label color for dark mode
+                style: { color: darkMode ? '#f0f0f0' : '#000' },
               }}
               sx={{ mb: 2 }}
             />
@@ -112,13 +112,13 @@ const ContactPage = () => {
               onChange={(e) => setMessage(e.target.value)}
               InputProps={{
                 style: {
-                  backgroundColor: darkMode ? '#555' : '#fff', // Adjusted to match dark mode background
-                  color: darkMode ? '#f0f0f0' : '#000', // Adjusted text color for dark mode
+                  backgroundColor: darkMode ? '#555' : '#fff',
+                  color: darkMode ? '#f0f0f0' : '#000',
                   borderRadius: '8px',
                 },
               }}
               InputLabelProps={{
-                style: { color: darkMode ? '#f0f0f0' : '#000' }, // Adjusted label color for dark mode
+                style: { color: darkMode ? '#f0f0f0' : '#000' },
               }}
               sx={{ mb: 2 }}
             />
@@ -137,4 +137,4 @@ const ContactPage = () => {
   );
 };
 
-export default ContactPage;
+export default ContactPage_nonSignedIn;

@@ -38,8 +38,11 @@ const LoginPage = () => {
         const user = response.data;
         const isPasswordMatch = await bcrypt.compare(formData.password, user.password);
         if (isPasswordMatch) {
-          sessionStorage.setItem('isUser', formData.email);
-          navigate('/user'); // Navigate to the User page
+          sessionStorage.setItem('userEmail', formData.email);
+          sessionStorage.setItem('firstName', user.firstName);
+          sessionStorage.setItem('lastName', user.lastName);
+  
+          navigate('/user');
         } else {
           alert('Incorrect password. Please try again.');
         }
@@ -51,6 +54,7 @@ const LoginPage = () => {
       alert('Failed to log in. Please try again.');
     }
   };
+  
 
   return (
     <div className={darkMode ? 'app dark-mode' : 'app'}>

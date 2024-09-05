@@ -1,3 +1,5 @@
+/* App.css */
+
 /* General App Styles */
 .app {
   font-family: 'Arial', sans-serif;
@@ -37,10 +39,28 @@
   height: 50px;
 }
 
+.nav-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.welcome-message {
+  margin-left: 1rem;
+  color: #333; /* Light color for dark mode */
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.dark-mode .welcome-message {
+  color: #e0e0e0; /* Light gray text color for dark mode */
+}
+
 .nav-links {
   display: flex;
   list-style: none;
   margin: 0;
+  padding: 0;
 }
 
 .nav-links li {
@@ -62,17 +82,19 @@
   color: #e0e0e0; /* Light gray text color for links in dark mode */
 }
 
-/* Theme Toggle Styles */
+/* General theme toggle styles */
 .theme-toggle {
   cursor: pointer;
   font-size: 1.5rem;
   transition: color 0.3s ease;
 }
 
+/* Dark mode specific styles */
 .dark-mode .theme-toggle {
   color: white !important; /* Icon color in dark mode */
 }
 
+/* Light mode specific styles */
 .app .theme-toggle {
   color: black; /* Icon color in light mode */
 }
@@ -156,40 +178,6 @@
   background-color: #003d7a;
 }
 
-/* SignUpPage Specific Styles */
-.signup-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 2rem;
-  padding: 2rem;
-  border: 1px solid;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.dark-mode .signup-container {
-  background-color: #333;
-  border-color: #555;
-}
-
-.signup-container .MuiTypography-root {
-  color: #333;
-}
-
-.dark-mode .signup-container .MuiTypography-root {
-  color: #e0e0e0;
-}
-
-.signup-container .MuiTextField-root {
-  margin-top: 1rem;
-}
-
-.signup-container .MuiButton-root {
-  margin-top: 1.5rem;
-}
-
 /* About Page Styles */
 .about-content {
   padding: 4rem 2rem;
@@ -235,4 +223,75 @@
   .about-description {
     font-size: 1rem;
   }
+}
+
+/* Logged Out Page Styles */
+.logged-out-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logged-out-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #007bff;
+}
+
+.logged-out-message {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.logged-out-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.logged-out-link:hover {
+  text-decoration: underline;
+}
+
+.logged-out-footer {
+  font-size: 0.875rem;
+  color: #888;
+}
+
+/* Logout Popup Styles */
+.logout-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  z-index: 1000;
+  max-width: 400px;
+  text-align: center;
+}
+
+.popup-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.popup-button {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
 }

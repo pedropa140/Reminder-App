@@ -32,7 +32,7 @@ const SignUpPage = () => {
       alert('Please fill in all fields.');
       return;
     }
-    const hashedPassword = await bcrypt.hash(formData.password, 10); // 10 is the number of salt rounds
+    const hashedPassword = await bcrypt.hash(formData.password, 10);
     formData.password = hashedPassword;
     formData.email = formData.email.trim();
     formData.firstName = formData.firstName.trim();
@@ -42,7 +42,7 @@ const SignUpPage = () => {
       const response = await createUser(formData);
       if (response.status === 200) {
         alert('User created successfully!');
-        navigate('/login'); // Redirect to the login page
+        navigate('/login');
       } else {
         alert('Failed to create user. Please try again.');
       }

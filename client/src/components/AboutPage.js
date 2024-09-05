@@ -77,22 +77,22 @@ const AboutPage = () => {
             marginTop: '20px',
             marginLeft: 'auto',
             marginRight: 'auto',
-            border: darkMode ? '1px solid #555' : '1px solid #ddd', // Darker border in dark mode
+            border: darkMode ? '1px solid #555' : '1px solid #ddd',
             borderRadius: '8px',
-            backgroundColor: darkMode ? '#222' : '#f9f9f9', // Light black background in dark mode
+            backgroundColor: darkMode ? '#222' : '#f9f9f9',
             padding: '20px',
             maxWidth: '600px',
-            boxShadow: darkMode ? '0 4px 8px rgba(0, 0, 0, 0.3)' : '0 4px 8px rgba(0, 0, 0, 0.1)', // Darker shadow in dark mode
+            boxShadow: darkMode ? '0 4px 8px rgba(0, 0, 0, 0.3)' : '0 4px 8px rgba(0, 0, 0, 0.1)',
           }}>
             <li style={{
               marginBottom: '10px',
               padding: '10px',
-              borderBottom: darkMode ? '1px solid #444' : '1px solid #ddd', // Darker border between items in dark mode
+              borderBottom: darkMode ? '1px solid #444' : '1px solid #ddd',
               fontSize: '16px',
               lineHeight: '1.5',
-              color: darkMode ? '#f0f0f0' : '#000', // White text in dark mode
-              backgroundColor: darkMode ? '#333' : '#fff', // Slightly different background color for list items in dark mode
-              transition: 'background-color 0.3s, color 0.3s', // Smooth transition for hover effect
+              color: darkMode ? '#f0f0f0' : '#000',
+              backgroundColor: darkMode ? '#333' : '#fff',
+              transition: 'background-color 0.3s, color 0.3s',
             }}>
               <strong>Task Management:</strong> Create, edit, and organize tasks with ease.
             </li>
@@ -157,7 +157,7 @@ const AboutPage = () => {
             backgroundColor: darkMode ? '#444' : '#f9f9f9',
             color: darkMode ? '#f0f0f0' : '#333',
             boxShadow: 3,
-            mb: '50px', // Margin-bottom of 50px to create the gap
+            mb: '50px',
           }}
         >
           <Typography variant="h5" sx={{ mb: 2 }}>
@@ -183,10 +183,10 @@ const AboutPage = () => {
                     borderRadius: '8px',
                     backgroundColor: darkMode ? '#555' : '#fff',
                     boxShadow: 1,
-                    textAlign: 'center', // Center-align text
-                    width: '100%', // Makes the box span the full width of its container
-                    maxWidth: '500px', // Sets a maximum width to prevent overflow
-                    margin: 'auto', // Centers the box horizontally
+                    textAlign: 'center',
+                    width: '100%',
+                    maxWidth: '500px',
+                    margin: 'auto',
                   }}
                 >
                   <Typography variant="h6" sx={{ mb: 1 }}>
