@@ -1,19 +1,42 @@
-import React, { useState } from 'react';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import { Link } from 'react-router-dom';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import React , { useState, useEffect, useRef } from 'react';
+import { Container, Box, Typography, Button, TextField } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
+import { FaSun, FaMoon } from 'react-icons/fa';
+import LogoutPopup from './LogoutPopup';
 
 const ContactPage_SignedIn = () => {
-    const [darkMode, setDarkMode] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
+    const [darkMode, setDarkMode] = useState(false);
+    const [popupOpen, setPopupOpen] = useState(false);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
+
+    const handleLogoutClick = () => {
+        setPopupOpen(true);
+    };
+
+    const handleConfirmLogout = () => {
+        sessionStorage.clear();
+        setPopupOpen(false);
+        navigate('/logged-out', { replace: true });
+    };
+
+    const handleClosePopup = () => {
+        setPopupOpen(false);
+    };
+
+    React.useEffect(() => {
+        if (!sessionStorage.getItem('userEmail')) {
+            navigate('/logged-out', { replace: true });
+        }
+    }, [navigate]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -32,6 +55,7 @@ const ContactPage_SignedIn = () => {
                     <li><Link to="/user">HOME</Link></li>
                     <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
                     <li><Link to="/user/contact">CONTACT</Link></li>
+                    <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
                 </ul>
                 <div className="theme-toggle" onClick={toggleDarkMode}>
                     {darkMode ? <FaSun /> : <FaMoon />}
@@ -131,6 +155,12 @@ const ContactPage_SignedIn = () => {
                     </form>
                 </Box>
             </Container>
+
+            <LogoutPopup
+                open={popupOpen}
+                onClose={handleClosePopup}
+                onConfirm={handleConfirmLogout}
+            />
         </div>
     );
 };
