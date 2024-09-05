@@ -11,6 +11,7 @@ import PomodoroTimer from './components/PomodoroTimer';
 import ContactPage_SignedIn from './components/ContactPage_SignedIn';
 import ProtectedRoute from './components/ProtectedRoute';
 import GoalPage from './components/Goal';
+import PairPage from './components/Pair';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/contact" element={<ContactPage_nonSignedIn />} />
         <Route path="/logged-out" element={<LoggedOutPage />} />
+        <Route path="/pair" element={<PairPage />} />
 
         <Route
           path="/user"

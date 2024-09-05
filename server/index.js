@@ -205,6 +205,27 @@ app.get("/users/getCompletedGoals/:email", async (req, res) => {
     }
 });
 
+//get the pair json
+app.get("/users/getPair/:email", async (req, res) => {
+    try {
+        const { email } = req.params;
+        console.log('Fetching pair for user with email:', email);
+        
+        const user = await UserModel.findOne({ email });
+
+        if (user) {
+            console.log('Pair found:', user.pair);
+            res.status(200).json({ pair: user.pair });
+        } else {
+            console.log('User not found for email:', email);
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.error('Failed to get pair:', error.message);
+        res.status(500).json({ message: "Failed to get pair", error: error.message });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

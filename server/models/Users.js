@@ -62,8 +62,14 @@ const UserSchema = new mongoose.Schema({
         }
     ],
     pair: {
+        enable: {
         type: Boolean,
         default: false
+        },
+        partner: {
+            type: String,
+            default: "No Partner"
+        }
     }
 
 })
