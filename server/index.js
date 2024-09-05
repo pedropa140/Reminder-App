@@ -142,6 +142,80 @@ app.get("/users/getGoal/:email", async (req, res) => {
     }
 });
 
+// backend/server.js
+
+app.put("/users/updateTaskStatus", async (req, res) => {
+    try {
+        const { email, goalTitle, taskName, completed } = req.body;
+
+        // Find the user by email
+        const user = await UserModel.findOne({ email });
+
+        if (user) {
+            // Find the specific goal
+            const goal = user.activeGoal.find(g => g.title === goalTitle);
+
+            if (goal) {
+                // Find the specific task within the goal
+                const task = goal.activeTasks.find(t => t.name === taskName);
+
+                if (task) {
+                    // Update the task completion status
+                    task.completed = completed;
+
+                    // Save the user document with the updated task
+                    await user.save();
+
+                    res.status(200).json({ message: "Task status updated successfully" });
+                } else {
+                    res.status(404).json({ message: "Task not found" });
+                }
+            } else {
+                res.status(404).json({ message: "Goal not found" });
+            }
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.error("Error updating task status:", error);
+        res.status(500).json({ message: "Failed to update task status", error: error.message });
+    }
+});
+
+app.get("/testUpdateTask", async (req, res) => {
+    try {
+        const email = 'test@example.com'; // Replace with a real email for testing
+        const goalTitle = 'Test Goal';
+        const taskName = 'Test Task';
+        const completed = true;
+
+        const user = await UserModel.findOne({ email });
+
+        if (user) {
+            const goal = user.activeGoal.find(g => g.title === goalTitle);
+
+            if (goal) {
+                const task = goal.activeTasks.find(t => t.name === taskName);
+
+                if (task) {
+                    task.completed = completed;
+                    await user.save();
+                    res.status(200).json({ message: "Task status updated successfully" });
+                } else {
+                    res.status(404).json({ message: "Task not found" });
+                }
+            } else {
+                res.status(404).json({ message: "Goal not found" });
+            }
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.error("Error updating task status:", error);
+        res.status(500).json({ message: "Failed to update task status", error: error.message });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

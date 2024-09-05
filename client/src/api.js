@@ -37,3 +37,13 @@ export const getGoals = async (email) => {
     const response = await axios.get(`${API_URL}/users/getGoals/${email}`);
     return response;
 }
+
+export const updateTaskStatus = (email, goalTitle, taskName, completed) => {
+    return axios.put(`${API_URL}/users/updateTaskStatus`, {
+        email,
+        goalTitle,
+        taskName,
+        completed
+    });
+};
+

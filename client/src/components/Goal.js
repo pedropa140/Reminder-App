@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, Button, TextField, IconButton } from '@mui/material';
-import { setGoal, getGoals } from '../api';
+import { Container, Box, Typography, Button, TextField, IconButton, Checkbox, FormControlLabel } from '@mui/material';
+import { setGoal, getGoals, updateTaskStatus } from '../api'; // Make sure updateTaskStatus is imported
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
@@ -41,6 +41,42 @@ const GoalPage = () => {
     setTasks(updatedTasks);
   };
 
+  const handleTaskCompletionChange = (goalIndex, taskIndex) => {
+    const updatedGoals = [...fetchedGoals];
+    const task = updatedGoals[goalIndex].activeTasks[taskIndex];
+    const updatedCompletedStatus = !task.completed;
+    task.completed = updatedCompletedStatus;
+
+    setFetchedGoals(updatedGoals);
+
+    // Update the status in MongoDB
+    const goalTitle = updatedGoals[goalIndex].title;
+    const taskName = task.name;
+
+    updateTaskStatus(email, goalTitle, taskName, updatedCompletedStatus)
+      .then(() => {
+        console.log('Task status updated successfully');
+
+        // Check if all tasks are completed
+        const allTasksCompleted = updatedGoals[goalIndex].activeTasks.every(t => t.completed);
+
+        if (allTasksCompleted) {
+          // Move the completed goal to completedGoals and remove it from activeGoal
+          const updatedUserGoals = [...fetchedGoals];
+          updatedUserGoals[goalIndex].completed = true; // Mark goal as completed
+
+          // Move to completed goals
+          // Assuming you have a function to handle this on the backend if needed
+
+          // Update the state with the completed goal removed from active goals
+          setFetchedGoals(updatedUserGoals.filter((goal, index) => index !== goalIndex));
+        }
+      })
+      .catch(error => {
+        console.error('Error updating task status:', error);
+      });
+  };
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
@@ -69,7 +105,10 @@ const GoalPage = () => {
     if (goal && tasks.length > 0) {
       setGoal({ email: email, goal: goal, tasks: tasks })
         .then(() => {
-          setFetchedGoals([...fetchedGoals, { title: goal, activeTasks: tasks.map(t => ({ name: t, completed: false })) }]);
+          setFetchedGoals([...fetchedGoals, {
+            title: goal,
+            activeTasks: tasks.map(t => ({ name: t, completed: false }))
+          }]);
           setGoalTitle(''); // Clear goal input
           setTasks(['']); // Clear tasks input
         })
@@ -128,10 +167,18 @@ const GoalPage = () => {
             {fetchedGoals.map((goal, goalIndex) => (
               <Box key={goalIndex} mb={2}>
                 <Typography variant="h6">{goal.title}</Typography>
-                <ul>
+                <ul style={{ listStyleType: 'none', padding: 0 }}>
                   {goal.activeTasks.map((task, taskIndex) => (
                     <li key={taskIndex}>
-                      {task.name} - {task.completed ? "Completed" : "Not Completed"}
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={task.completed}
+                            onChange={() => handleTaskCompletionChange(goalIndex, taskIndex)}
+                          />
+                        }
+                        label={task.name}
+                      />
                     </li>
                   ))}
                 </ul>
