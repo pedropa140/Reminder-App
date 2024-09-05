@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Box, Typography, Button, TextField, IconButton, Checkbox, FormControlLabel } from '@mui/material';
-import { setGoal, getGoals, updateTaskStatus } from '../api'; // Make sure updateTaskStatus is imported
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
+import { setGoal, getGoals, updateTaskStatus, updateGoalStatus } from '../api'; // Ensure updateGoalStatus is imported
+
 
 const GoalPage = () => {
   const [goal, setGoalTitle] = useState('');
@@ -46,36 +47,44 @@ const GoalPage = () => {
     const task = updatedGoals[goalIndex].activeTasks[taskIndex];
     const updatedCompletedStatus = !task.completed;
     task.completed = updatedCompletedStatus;
-
+  
+    // Update the state
     setFetchedGoals(updatedGoals);
-
+  
     // Update the status in MongoDB
     const goalTitle = updatedGoals[goalIndex].title;
     const taskName = task.name;
-
+  
     updateTaskStatus(email, goalTitle, taskName, updatedCompletedStatus)
       .then(() => {
         console.log('Task status updated successfully');
-
+  
         // Check if all tasks are completed
         const allTasksCompleted = updatedGoals[goalIndex].activeTasks.every(t => t.completed);
-
+  
         if (allTasksCompleted) {
-          // Move the completed goal to completedGoals and remove it from activeGoal
+          // Set the goal as completed and update MongoDB
+          const updatedGoal = { ...updatedGoals[goalIndex], completed: true };
           const updatedUserGoals = [...fetchedGoals];
-          updatedUserGoals[goalIndex].completed = true; // Mark goal as completed
-
-          // Move to completed goals
-          // Assuming you have a function to handle this on the backend if needed
-
-          // Update the state with the completed goal removed from active goals
-          setFetchedGoals(updatedUserGoals.filter((goal, index) => index !== goalIndex));
+          updatedUserGoals[goalIndex] = updatedGoal;
+  
+          setFetchedGoals(updatedUserGoals);
+  
+          // Call the backend to update the goal status
+          updateGoalStatus(email, goalTitle, true)
+            .then(() => {
+              console.log('Goal status updated successfully');
+            })
+            .catch(error => {
+              console.error('Error updating goal status:', error);
+            });
         }
       })
       .catch(error => {
         console.error('Error updating task status:', error);
       });
   };
+  
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);

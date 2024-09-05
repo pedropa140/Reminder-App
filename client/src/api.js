@@ -47,3 +47,18 @@ export const updateTaskStatus = (email, goalTitle, taskName, completed) => {
     });
 };
 
+// api.js
+export const updateGoalStatus = (email, goalTitle, completed) => {
+    return fetch(`http://localhost:5000/users/updateGoalStatus`, { // Adjust the URL as needed
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, goalTitle, completed })
+    })
+    .then(response => response.json())
+    .catch(error => {
+      console.error('Error updating goal status:', error);
+    });
+  };
+  

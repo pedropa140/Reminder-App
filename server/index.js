@@ -216,6 +216,43 @@ app.get("/testUpdateTask", async (req, res) => {
     }
 });
 
+// Assuming you have already required necessary modules and set up mongoose
+
+app.put("/users/updateGoalStatus", async (req, res) => {
+    try {
+      const { email, goalTitle, completed } = req.body;
+  
+      // Find the user and update the goal status
+      const user = await UserModel.findOneAndUpdate(
+        { email, "activeGoal.title": goalTitle },
+        { $set: { "activeGoal.$.completed": completed } },
+        { new: true }
+      );
+  
+      if (user) {
+        // Move the completed goal to completedGoals if completed
+        if (completed) {
+          const updatedUser = await UserModel.findOneAndUpdate(
+            { email },
+            {
+              $pull: { activeGoal: { title: goalTitle } },
+              $push: { completedGoals: { title: goalTitle } }
+            },
+            { new: true }
+          );
+          res.status(200).json(updatedUser);
+        } else {
+          res.status(200).json(user);
+        }
+      } else {
+        res.status(404).json({ message: "User or goal not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update goal status", error: error.message });
+    }
+  });
+  
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
