@@ -47,9 +47,8 @@ export const updateTaskStatus = (email, goalTitle, taskName, completed) => {
     });
 };
 
-// api.js
 export const updateGoalStatus = (email, goalTitle, completed) => {
-    return fetch(`http://localhost:5000/users/updateGoalStatus`, { // Adjust the URL as needed
+    return fetch(`http://localhost:5000/users/updateGoalStatus`, { 
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

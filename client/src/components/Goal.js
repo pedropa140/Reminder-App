@@ -74,6 +74,7 @@ const GoalPage = () => {
           updateGoalStatus(email, goalTitle, true)
             .then(() => {
               console.log('Goal status updated successfully');
+              window.location.reload(); // Refresh the page
             })
             .catch(error => {
               console.error('Error updating goal status:', error);
