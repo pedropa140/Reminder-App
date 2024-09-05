@@ -226,6 +226,44 @@ app.get("/users/getPair/:email", async (req, res) => {
     }
 });
 
+// Delete a goal
+app.delete('/users/deleteGoal', async (req, res) => {
+    const { email, goalTitle } = req.body;
+    try {
+        const user = await UserModel.findOneAndUpdate(
+            { email },
+            { $pull: { activeGoal: { title: goalTitle } } },
+            { new: true }
+        );
+        if (user) {
+            res.status(200).json({ message: "Goal deleted successfully", activeGoal: user.activeGoal });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Delete a task
+app.delete('/users/deleteTask', async (req, res) => {
+    const { email, goalTitle, taskName } = req.body;
+    try {
+        const user = await UserModel.findOneAndUpdate(
+            { email, 'activeGoal.title': goalTitle },
+            { $pull: { 'activeGoal.$.activeTasks': { name: taskName } } },
+            { new: true }
+        );
+        if (user) {
+            res.status(200).json({ message: "Task deleted successfully", activeGoal: user.activeGoal });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 
 app.listen(port, () => {

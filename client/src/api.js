@@ -83,4 +83,27 @@ export const getPair = async(email) => {
     }
 }
 
-
+export const deleteGoal = async (email, goalTitle) => {
+    try {
+      const response = await axios.delete(`${API_URL}/users/deleteGoal`, {
+        data: { email, goalTitle }
+      });
+      return response;
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      throw error;
+    }
+  };
+  
+  export const deleteTask = async (email, goalTitle, taskName) => {
+    try {
+      const response = await axios.delete(`${API_URL}/users/deleteTask`, {
+        data: { email, goalTitle, taskName }
+      });
+      return response;
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      throw error;
+    }
+  };
+  

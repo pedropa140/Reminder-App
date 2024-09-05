@@ -5,7 +5,7 @@ import logo from '../icon.png';
 import '../App.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
-import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals } from '../api';
+import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals, deleteGoal, deleteTask } from '../api';
 
 const GoalPage = () => {
   const [goal, setGoalTitle] = useState('');
@@ -71,32 +71,62 @@ const GoalPage = () => {
     const taskName = task.name;
 
     updateTaskStatus(email, goalTitle, taskName, updatedCompletedStatus)
-        .then(() => {
-            console.log('Task status updated successfully');
-            
-            const allTasksCompleted = updatedGoals[goalIndex].activeTasks.every(t => t.completed);
+      .then(() => {
+        console.log('Task status updated successfully');
+        
+        const allTasksCompleted = updatedGoals[goalIndex].activeTasks.every(t => t.completed);
 
-            if (allTasksCompleted) {
-                const updatedGoal = { ...updatedGoals[goalIndex], completed: true };
-                const updatedUserGoals = [...fetchedGoals];
-                updatedUserGoals[goalIndex] = updatedGoal;
+        if (allTasksCompleted) {
+          const updatedGoal = { ...updatedGoals[goalIndex], completed: true };
+          const updatedUserGoals = [...fetchedGoals];
+          updatedUserGoals[goalIndex] = updatedGoal;
 
-                setFetchedGoals(updatedUserGoals);
+          setFetchedGoals(updatedUserGoals);
 
-                updateGoalStatus(email, goalTitle, true)
-                    .then(() => {
-                        console.log('Goal status updated successfully');
-                        fetchGoalsAndCompletedGoals(); // Refetch goals and completed goals
-                    })
-                    .catch(error => {
-                        console.error('Error updating goal status:', error);
-                    });
-            }
-        })
-        .catch(error => {
-            console.error('Error updating task status:', error);
-        });
+          updateGoalStatus(email, goalTitle, true)
+            .then(() => {
+              console.log('Goal status updated successfully');
+              fetchGoalsAndCompletedGoals(); // Refetch goals and completed goals
+            })
+            .catch(error => {
+              console.error('Error updating goal status:', error);
+            });
+        }
+      })
+      .catch(error => {
+        console.error('Error updating task status:', error);
+      });
   };
+
+  const handleDeleteGoal = (goalTitle, goalIndex) => {
+    deleteGoal(email, goalTitle)
+      .then(() => {
+        console.log(`Goal "${goalTitle}" deleted successfully.`);
+        // Remove goal from state
+        const updatedGoals = [...fetchedGoals];
+        updatedGoals.splice(goalIndex, 1); // Remove the deleted goal from the array
+        setFetchedGoals(updatedGoals);
+      })
+      .catch(error => {
+        console.error('Error deleting goal:', error);
+      });
+  };
+
+const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
+    const goalTitle = fetchedGoals[goalIndex].title;
+    deleteTask(email, goalTitle, taskName)
+      .then(() => {
+        console.log(`Task "${taskName}" deleted successfully.`);
+        // Remove task from state
+        const updatedGoals = [...fetchedGoals];
+        updatedGoals[goalIndex].activeTasks.splice(taskIndex, 1); // Remove the deleted task from the array
+        setFetchedGoals(updatedGoals);
+      })
+      .catch(error => {
+        console.error('Error deleting task:', error);
+      });
+  };
+
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -187,7 +217,12 @@ const GoalPage = () => {
             <Typography variant="h5">Your Goals</Typography>
             {fetchedGoals.map((goal, goalIndex) => (
               <Box key={goalIndex} mb={2}>
-                <Typography variant="h6">{goal.title}</Typography>
+                <Typography variant="h6">
+                  {goal.title}
+                  <Button color="error" onClick={() => handleDeleteGoal(goal.title, goalIndex)} style={{ marginLeft: '1rem' }}>
+                    Delete Goal
+                  </Button>
+                </Typography>
                 <ul style={{ listStyleType: 'none', padding: 0 }}>
                   {goal.activeTasks && Array.isArray(goal.activeTasks) ? (
                     goal.activeTasks.map((task, taskIndex) => (
@@ -201,6 +236,9 @@ const GoalPage = () => {
                           }
                           label={task.name}
                         />
+                        <Button color="error" onClick={() => handleDeleteTask(goalIndex, taskIndex, task.name)}>
+                          Delete Task
+                        </Button>
                       </li>
                     ))
                   ) : (
