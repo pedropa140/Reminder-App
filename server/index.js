@@ -60,14 +60,16 @@ app.get("/users/getUser/:email", async(req, res) => {
 //set a goal
 app.put("/users/setGoal", async (req, res)=> {
     try{
-        const email = req.params.email;
-        const goal = req.params.goal;
-        const tasks = req.params.tasks;
+        const { email, goal, tasks } = req.body;
+        console.log(email);
+        console.log(goal);
+        console.log(tasks);
         const user = await UserModel.findOneAndUpdate(
             { email },
             { 
                 activeGoal: {
                     title: goal,
+                    completed: false,
                     activeTasks: tasks.map(task => ({ name: task, completed: false }))
                 }
             },
@@ -88,12 +90,12 @@ app.put("/users/setGoal", async (req, res)=> {
 app.get("/users/getGoal/:email", async(req, res) => {
     try {
         const { email } = req.params;
-        console.log(email);
+        //console.log(email);
         const user = await UserModel.findOne({ email });
         if (user)
         {
-            const goal = user.activeGoal;
-            res.status(200).json({goal});
+            const activeGoal = user.activeGoal;
+            res.status(200).json({activeGoal});
         } else {
             res.status(404).json({message: "User not found"});
         }

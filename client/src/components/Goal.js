@@ -35,7 +35,7 @@ const GoalPage = () => {
   const handleSubmitGoal = () => {
     //console.log(email);
     if (goal && tasks.length > 0) {
-      setGoal(email, { goal, tasks })
+      setGoal({email: email, goal: goal, tasks: tasks })
         .then(() => {
           setFetchedGoal({ title: goal, activeTasks: tasks.map(t => ({ name: t, completed: false })) });
         })

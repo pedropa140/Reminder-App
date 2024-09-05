@@ -21,7 +21,8 @@ export const getUser = async(email)=>{
 
 //set goal for user
 export const setGoal = async(goal)=>{
-    const response = await axios.post(`${API_URL}/users/setGoal`, goal);
+    console.log(goal);
+    const response = await axios.put(`${API_URL}/users/setGoal`, goal);
     return response;
 }
 
