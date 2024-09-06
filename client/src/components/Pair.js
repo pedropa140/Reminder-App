@@ -29,7 +29,7 @@ const PairPage = () => {
         <Container>
             <Box>
                 <Typography variant="h4">Pair with a Partner</Typography>
-                {partner ? (
+                {pairingStatus ? (
                     <Typography variant="h6">You are paired with: {partner}</Typography>
                 ) : (
                     <Button variant="contained" color="primary" onClick={handlePair}>
