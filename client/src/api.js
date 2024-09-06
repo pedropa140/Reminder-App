@@ -82,7 +82,7 @@ export const getPair = async(email) => {
         throw error;
     }
 }
-
+// Delete goal given email and goal time
 export const deleteGoal = async (email, goalTitle) => {
     try {
       const response = await axios.delete(`${API_URL}/users/deleteGoal`, {
@@ -95,6 +95,7 @@ export const deleteGoal = async (email, goalTitle) => {
     }
   };
   
+  // delete task given email, goal, and task name
   export const deleteTask = async (email, goalTitle, taskName) => {
     try {
       const response = await axios.delete(`${API_URL}/users/deleteTask`, {

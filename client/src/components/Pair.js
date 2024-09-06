@@ -5,7 +5,7 @@ import logo from '../icon.png';
 import '../App.css';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
-import { getGoals,getPair} from '../api';
+import { getGoals,getPair, setPair} from '../api';
 
 
 const PairPage = () => {
