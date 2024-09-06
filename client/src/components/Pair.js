@@ -11,17 +11,16 @@ const PairPage = () => {
         // Fetch current pairing status
         getPair(email)
           .then(response => {
-            setPartner(response.data.pair.partner);
-            setPairingStatus(response.data.pair.enable);
+            setPartner(response.data.pair.partner || null);  // Set partner if exists, else null
+            setPairingStatus(response.data.pair.enable || false);  // Set pairing status if exists
           })
           .catch(error => console.error("Error fetching pairing status:", error));
-      }, [email]);
+    }, [email]);
 
     const handlePair = () => {
-        setPairingStatus(true);
         setPair(email)
           .then(response => {
-            setPartner(response.data.partner);
+            setPartner(response.data.partner);  // Update with the new partner
           })
           .catch(error => console.error("Error pairing:", error));
     };
