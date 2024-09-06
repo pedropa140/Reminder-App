@@ -115,3 +115,32 @@ export const deleteGoal = async (email, goalTitle) => {
     }
   };
   
+  // Add a reminder
+export const addReminder = async (email, month, day, year, reminder) => {
+    try {
+        const response = await axios.post(`${API_URL}/users/addReminder`, {
+            email,
+            month,
+            day,
+            year,
+            reminder
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding reminder:", error);
+        throw error;
+    }
+};
+
+// Remove a reminder
+export const removeReminder = async (email, month, day, year) => {
+    try {
+        const response = await axios.delete(`${API_URL}/users/removeReminder`, {
+            data: { email, month, day, year }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error removing reminder:", error);
+        throw error;
+    }
+};

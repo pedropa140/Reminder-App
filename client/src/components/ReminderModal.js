@@ -1,51 +1,45 @@
-// TaskModal.js
-import React, { useState } from 'react';
-import './ReminderModal.css'; // Add your CSS styling here
+import React, { useState, useEffect } from 'react';
+import { addReminder, removeReminder } from '../api'; // Import API methods
 
 function ReminderModal({ date, tasks, onClose, onSave }) {
-  const [taskInput, setTaskInput] = useState('');
-  const [localTasks, setLocalTasks] = useState(tasks);
+    const [reminder, setReminder] = useState("");
+    const [userEmail, setUserEmail] = useState(sessionStorage.getItem('userEmail'));
 
-  const handleAddTask = () => {
-    if (taskInput) {
-      setLocalTasks([...localTasks, taskInput]);
-      setTaskInput('');
-    }
-  };
+    const handleSave = async () => {
+        const { day, month, year } = date;
+        try {
+            await addReminder(userEmail, month + 1, day, year, reminder); // Add 1 to month for 1-based index
+            onSave(date, [...tasks, reminder]); // Update tasks and close modal
+        } catch (error) {
+            console.error('Failed to add reminder:', error);
+        }
+        onClose();
+    };
 
-  const handleRemoveTask = (index) => {
-    setLocalTasks(localTasks.filter((_, i) => i !== index));
-  };
+    const handleRemove = async () => {
+        const { day, month, year } = date;
+        try {
+            await removeReminder(userEmail, month + 1, day, year); // Add 1 to month for 1-based index
+            onSave(date, tasks.filter(task => task !== reminder)); // Update tasks and close modal
+        } catch (error) {
+            console.error('Failed to remove reminder:', error);
+        }
+        onClose();
+    };
 
-  const handleSave = () => {
-    onSave(date, localTasks);
-    onClose();
-  };
-
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Tasks for {date.toDateString()}</h2>
-        <input
-          type="text"
-          value={taskInput}
-          onChange={(e) => setTaskInput(e.target.value)}
-          placeholder="New task"
-        />
-        <button onClick={handleAddTask}>Add Task</button>
-        <ul>
-          {localTasks.map((task, index) => (
-            <li key={index}>
-              {task}
-              <button onClick={() => handleRemoveTask(index)}>Remove</button>
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleSave}>Save</button>
-        <button onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
+    return (
+        <div className="modal">
+            <h2>Reminders for {date.toDateString()}</h2>
+            <textarea
+                value={reminder}
+                onChange={(e) => setReminder(e.target.value)}
+                placeholder="Add a new reminder"
+            />
+            <button onClick={handleSave}>Save Reminder</button>
+            <button onClick={handleRemove}>Remove Reminder</button>
+            <button onClick={onClose}>Close</button>
+        </div>
+    );
 }
 
 export default ReminderModal;
