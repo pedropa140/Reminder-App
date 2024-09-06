@@ -115,8 +115,7 @@ export const deleteGoal = async (email, goalTitle) => {
     }
   };
   
-  // Add a reminder
-export const addReminder = async (email, month, day, year, reminder) => {
+  export const addReminder = async (email, month, day, year, reminder) => {
     try {
         const response = await axios.post(`${API_URL}/users/addReminder`, {
             email,
@@ -141,6 +140,17 @@ export const removeReminder = async (email, month, day, year) => {
         return response.data;
     } catch (error) {
         console.error("Error removing reminder:", error);
+        throw error;
+    }
+};
+
+// Get all reminders for a user
+export const getReminders = async (email) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/getReminders/${email}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching reminders:", error);
         throw error;
     }
 };

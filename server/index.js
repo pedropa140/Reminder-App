@@ -304,15 +304,40 @@ app.delete('/users/deleteTask', async (req, res) => {
     }
 });
 
-// Add a reminder
+// Get all reminders for a user
+app.get('/users/getReminders/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+
+        // Find the user and return their reminders
+        const user = await UserModel.findOne({ email });
+        if (user) {
+            res.status(200).json({ reminders: user.reminders });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to get reminders", error: error.message });
+    }
+});
+
 app.post('/users/addReminder', async (req, res) => {
     try {
         const { email, month, day, year, reminder } = req.body;
 
+        // Ensure that month, day, and year are integers
+        const parsedMonth = parseInt(month, 10);
+        const parsedDay = parseInt(day, 10);
+        const parsedYear = parseInt(year, 10);
+
+        if (isNaN(parsedMonth) || isNaN(parsedDay) || isNaN(parsedYear)) {
+            return res.status(400).json({ message: "Invalid date values" });
+        }
+
         // Find the user and add the reminder
         const user = await UserModel.findOneAndUpdate(
             { email },
-            { $push: { reminders: { month, day, year, reminder } } },
+            { $push: { reminders: { month: parsedMonth, day: parsedDay, year: parsedYear, reminder } } },
             { new: true }
         );
 
@@ -325,6 +350,7 @@ app.post('/users/addReminder', async (req, res) => {
         res.status(500).json({ message: "Failed to add reminder", error: error.message });
     }
 });
+    
 
 // Remove a reminder
 app.delete('/users/removeReminder', async (req, res) => {
@@ -347,7 +373,6 @@ app.delete('/users/removeReminder', async (req, res) => {
         res.status(500).json({ message: "Failed to remove reminder", error: error.message });
     }
 });
-
 
 
 app.listen(port, () => {

@@ -6,6 +6,7 @@ import { FaSun, FaMoon } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
 import './Calendar.css';
 import ReminderModal from './ReminderModal';
+import { addReminder, removeReminder } from '../api'; // Import API methods
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -88,13 +89,27 @@ function CalendarPage() {
     }
   };
 
-  const handleSaveTasks = (date, updatedTasks) => {
+  const handleSaveTasks = async (date, updatedTasks, reminder) => {
     const dateKey = date.toDateString();
     setTasks(prevTasks => ({
-      ...prevTasks,
-      [dateKey]: updatedTasks
+        ...prevTasks,
+        [dateKey]: updatedTasks
     }));
-  };
+
+    // Save the reminder to the backend
+    if (reminder) {
+        const month = parseInt(date.getMonth() + 1, 10); // Ensure month is an integer
+        const day = parseInt(date.getDate(), 10);        // Ensure day is an integer
+        const year = parseInt(date.getFullYear(), 10);   // Ensure year is an integer
+
+        try {
+            await addReminder(email, month, day, year, reminder); // Call to save reminder
+        } catch (error) {
+            console.error('Error adding reminder:', error);
+        }
+    }
+};
+
 
   const closeModal = () => {
     setShowModal(false);
