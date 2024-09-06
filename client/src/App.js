@@ -12,6 +12,7 @@ import ContactPage_SignedIn from './components/ContactPage_SignedIn';
 import ProtectedRoute from './components/ProtectedRoute';
 import GoalPage from './components/Goal';
 import PairPage from './components/Pair';
+import CalendarPage from './components/Calendar';
 
 function App() {
   return (
@@ -55,6 +56,15 @@ function App() {
           element={
             <ProtectedRoute>
               <GoalPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user/calendar"
+          element={
+            <ProtectedRoute>
+              <CalendarPage />
             </ProtectedRoute>
           }
         />
