@@ -304,6 +304,50 @@ app.delete('/users/deleteTask', async (req, res) => {
     }
 });
 
+// Add a reminder
+app.post('/users/addReminder', async (req, res) => {
+    try {
+        const { email, month, day, year, reminder } = req.body;
+
+        // Find the user and add the reminder
+        const user = await UserModel.findOneAndUpdate(
+            { email },
+            { $push: { reminders: { month, day, year, reminder } } },
+            { new: true }
+        );
+
+        if (user) {
+            res.status(200).json({ message: "Reminder added successfully", reminders: user.reminders });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to add reminder", error: error.message });
+    }
+});
+
+// Remove a reminder
+app.delete('/users/removeReminder', async (req, res) => {
+    try {
+        const { email, month, day, year } = req.body;
+
+        // Find the user and remove the reminder
+        const user = await UserModel.findOneAndUpdate(
+            { email },
+            { $pull: { reminders: { month, day, year } } },
+            { new: true }
+        );
+
+        if (user) {
+            res.status(200).json({ message: "Reminder removed successfully", reminders: user.reminders });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to remove reminder", error: error.message });
+    }
+});
+
 
 
 app.listen(port, () => {
