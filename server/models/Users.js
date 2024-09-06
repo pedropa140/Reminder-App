@@ -70,9 +70,30 @@ const UserSchema = new mongoose.Schema({
             type: String,
             default: "No Partner"
         }
-    }
-
+    },
+    reminders: [{
+        month: {
+            type: Number, // 1 for January, 2 for February, etc.
+            required: true,
+            min: 1,
+            max: 12
+        },
+        day: {
+            type: Number, // 1 to 31
+            required: true,
+            min: 1,
+            max: 31
+        },
+        year: {
+            type: Number, // Year in YYYY format
+            required: true
+        },
+        reminder: {
+            type: String,
+            required: true
+        }
+    }]
 })
 
 const UserModel = mongoose.model("users", UserSchema);
-module.exports = UserModel
+module.exports = UserModel;
