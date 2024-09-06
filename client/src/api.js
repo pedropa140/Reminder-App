@@ -82,6 +82,13 @@ export const getPair = async(email) => {
         throw error;
     }
 }
+
+// set a pair information for user
+export const setPair = async (email) => {
+    const response = await axios.put(`${API_URL}/users/setPair`, { email });
+    return response;
+};
+
 // Delete goal given email and goal time
 export const deleteGoal = async (email, goalTitle) => {
     try {

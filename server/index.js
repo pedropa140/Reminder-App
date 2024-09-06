@@ -226,6 +226,47 @@ app.get("/users/getPair/:email", async (req, res) => {
     }
 });
 
+// set a pair 
+// Pair users
+app.put("/users/setPair", async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        // Find the user who wants to pair
+        const user = await UserModel.findOne({ email, 'pair.enable': true, 'activeGoal.0.completed': false });
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found or no active goal." });
+        }
+
+        // Find another user to pair with (someone else who has enabled pairing and is not already paired)
+        const potentialPartner = await UserModel.findOne({
+            email: { $ne: email },  // Not the same user
+            'pair.enable': true,
+            'pair.partner': "No Partner",
+            'activeGoal.0.completed': false
+        });
+
+        if (!potentialPartner) {
+            return res.status(404).json({ message: "No matching partner found." });
+        }
+
+        // Pair both users
+        user.pair.partner = potentialPartner.email;
+        potentialPartner.pair.partner = user.email;
+
+        // Save both users
+        await user.save();
+        await potentialPartner.save();
+
+        // Return success response
+        res.status(200).json({ message: "Users paired successfully", partner: potentialPartner.email });
+    } catch (error) {
+        res.status(500).json({ message: "Failed to pair users", error: error.message });
+    }
+});
+
+
 // Delete a goal
 app.delete('/users/deleteGoal', async (req, res) => {
     const { email, goalTitle } = req.body;
