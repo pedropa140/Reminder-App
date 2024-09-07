@@ -329,6 +329,22 @@ export default function ChatbotPage() {
         <button onClick={() => handleSendMessage()} className={`send-button ${accent}`}>Send</button>
       </footer>
     </div>
+    {/* Popup for logout confirmation */}
+    <LogoutPopup
+        open={popupOpen}
+        onClose={handleClosePopup}
+        onConfirm={handleConfirmLogout}
+      />
+
+      {/* Popup for settings with user info */}
+      <SettingsPopup
+        open={settingsOpen}
+        onClose={handleCloseSettings}
+        firstName={firstName}
+        lastName={lastName}
+        email={email}
+        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
+      />
     </div>
   );
 }

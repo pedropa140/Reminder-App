@@ -3,19 +3,25 @@ import { Container, Box, Typography, Button, TextField, IconButton, Checkbox, Fo
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
-import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals, deleteGoal, deleteTask } from '../api';
+import SettingsPopup from './SettingsPopup';
+import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals, deleteGoal, deleteTask, updateUserInfo } from '../api';
 
 const GoalPage = () => {
   const [goal, setGoalTitle] = useState('');
   const [tasks, setTasks] = useState(['']);
   const [fetchedGoals, setFetchedGoals] = useState([]);
   const [completedGoals, setCompletedGoals] = useState([]);
-  const email = sessionStorage.getItem('userEmail');
+  // const email = sessionStorage.getItem('userEmail');
+  const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
+  const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
+  const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
+  
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(false);
-  const [popupOpen, setPopupOpen] = useState(false);
+  const [darkMode, setDarkMode] = React.useState(false);
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
 
   const fetchGoalsAndCompletedGoals = () => {
     if (email) {
@@ -146,7 +152,39 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
     setPopupOpen(false);
   };
 
-  useEffect(() => {
+  const handleSettingsClick = () => {
+    setSettingsOpen(true); // Open the settings popup
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsOpen(false); // Close the settings popup
+  };
+
+  // Function to handle user info update from SettingsPopup
+  const handleUpdateUserInfo = async (updatedData) => {
+    try {
+      // Make API call to update user information
+      const response = await updateUserInfo(updatedData);
+      
+      // Update the sessionStorage with the new data
+      if (response.user) {
+        sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
+        sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
+        sessionStorage.setItem('userEmail', updatedData.newEmail || email);
+
+        // Update the local state to reflect the new data
+        setFirstName(updatedData.name.split(' ')[0]);
+        setLastName(updatedData.name.split(' ')[1] || '');
+        setEmail(updatedData.newEmail || email);
+      }
+
+      setSettingsOpen(false); // Close the settings popup
+    } catch (error) {
+      console.error('Failed to update user info:', error);
+    }
+  };
+
+  React.useEffect(() => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
     }
@@ -180,11 +218,17 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
           <li><Link to="/user/goal">TASKS</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
-          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <div className="settings-icon" onClick={handleSettingsClick}>
+            <FaCog />
+          </div>
         </ul>
-        <div className="theme-toggle" onClick={toggleDarkMode}>
-          {darkMode ? <FaSun /> : <FaMoon />}
+        <div className="nav-actions">
+          <div className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </div>
         </div>
       </nav>
       <Container>
@@ -268,13 +312,21 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
         )}
       </Container>
 
-      {popupOpen && (
-        <LogoutPopup
-          open={popupOpen}
-          onConfirm={handleConfirmLogout}
-          onClose={handleClosePopup}
-        />
-      )}
+      <LogoutPopup
+        open={popupOpen}
+        onClose={handleClosePopup}
+        onConfirm={handleConfirmLogout}
+      />
+
+      {/* Popup for settings with user info */}
+      <SettingsPopup
+        open={settingsOpen}
+        onClose={handleCloseSettings}
+        firstName={firstName}
+        lastName={lastName}
+        email={email}
+        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
+      />
     </div>
   );
 };

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
+import SettingsPopup from './SettingsPopup';
 import './Calendar.css';
 import ReminderModal from './ReminderModal';
-import { addReminder, removeReminder } from '../api'; // Import API methods
+import { addReminder, removeReminder, updateUserInfo } from '../api'; // Import API methods
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tueday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
 
@@ -42,13 +43,14 @@ function CalendarPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [tasks, setTasks] = useState({});
-  const [darkMode, setDarkMode] = useState(false);
-  const [popupOpen, setPopupOpen] = useState(false);
-
-  const firstName = sessionStorage.getItem('firstName');
-  const lastName = sessionStorage.getItem('lastName');
-  const email = sessionStorage.getItem('userEmail');
+  const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
+  const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
+  const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
+  
   const navigate = useNavigate();
+  const [darkMode, setDarkMode] = React.useState(false);
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -68,7 +70,39 @@ function CalendarPage() {
     setPopupOpen(false);
   };
 
-  useEffect(() => {
+  const handleSettingsClick = () => {
+    setSettingsOpen(true); // Open the settings popup
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsOpen(false); // Close the settings popup
+  };
+
+  // Function to handle user info update from SettingsPopup
+  const handleUpdateUserInfo = async (updatedData) => {
+    try {
+      // Make API call to update user information
+      const response = await updateUserInfo(updatedData);
+      
+      // Update the sessionStorage with the new data
+      if (response.user) {
+        sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
+        sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
+        sessionStorage.setItem('userEmail', updatedData.newEmail || email);
+
+        // Update the local state to reflect the new data
+        setFirstName(updatedData.name.split(' ')[0]);
+        setLastName(updatedData.name.split(' ')[1] || '');
+        setEmail(updatedData.newEmail || email);
+      }
+
+      setSettingsOpen(false); // Close the settings popup
+    } catch (error) {
+      console.error('Failed to update user info:', error);
+    }
+  };
+
+  React.useEffect(() => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
     }
@@ -132,11 +166,17 @@ function CalendarPage() {
           <li><Link to="/user/goal">TASKS</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
-          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <div className="settings-icon" onClick={handleSettingsClick}>
+            <FaCog />
+          </div>
         </ul>
-        <div className="theme-toggle" onClick={toggleDarkMode}>
-          {darkMode ? <FaSun /> : <FaMoon />}
+        <div className="nav-actions">
+          <div className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </div>
         </div>
       </nav>
       <div className="calendar">
@@ -179,8 +219,18 @@ function CalendarPage() {
       </div>
       <LogoutPopup
         open={popupOpen}
-        onConfirm={handleConfirmLogout}
         onClose={handleClosePopup}
+        onConfirm={handleConfirmLogout}
+      />
+
+      {/* Popup for settings with user info */}
+      <SettingsPopup
+        open={settingsOpen}
+        onClose={handleCloseSettings}
+        firstName={firstName}
+        lastName={lastName}
+        email={email}
+        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
       />
     </div>
   );
