@@ -107,6 +107,30 @@ export const deleteGoal = async (email, goalTitle) => {
       throw error;
     }
 
-    
   };
   
+//delete a tag
+//get all the tags
+//supposedly no set tag.
+export const deleteTag = async (email, tagName) => {
+    try{
+        const response = await axios.delete(`${API_URL}/timer/deleteTag`, {
+            data: { email, tagName }
+    });
+}
+    catch(error){
+        console.error('Error in deleting tag:', error);
+        throw error;
+    }
+};
+
+export const getAllTags = async (email) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/getTags/${email}`);
+        return response;
+    }
+    catch (error){
+        console.error("Error in retrieving tags:", error);
+        throw error;
+    }
+};
