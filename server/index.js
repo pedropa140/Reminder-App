@@ -4,6 +4,7 @@ const app = express();
 const mongoose = require('mongoose');
 const UserModel = require('./models/Users');
 const cors = require('cors');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 app.use(express.json());
 app.use(cors());
@@ -11,6 +12,7 @@ app.use(cors());
 // Backend Port + MongoDB connection
 const port = process.env.PORT || 5000;
 const mongodb_url = process.env.MONGODB_URL;
+const genAI = new GoogleGenerativeAI(process.env.GENAI_API_KEY);
 
 mongoose.connect(mongodb_url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
@@ -348,7 +350,20 @@ app.delete('/users/removeReminder', async (req, res) => {
     }
 });
 
-
+app.post("/gemini", async (req, res) => {
+    const { history, message } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
+    const chat = model.startChat({
+      history: req.body.history,
+    });
+    const msg = req.body.message;
+  
+    const result = await chat.sendMessage(msg);
+    const response = await result.response;
+    const text = response.text();
+    res.send(text);
+  });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

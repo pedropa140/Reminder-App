@@ -13,6 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import GoalPage from './components/Goal';
 import PairPage from './components/Pair';
 import CalendarPage from './components/Calendar';
+import ChatbotPage from './components/ChatbotPage';
 
 function App() {
   return (
@@ -65,6 +66,15 @@ function App() {
           element={
             <ProtectedRoute>
               <CalendarPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user/chatbot"
+          element={
+            <ProtectedRoute>
+              <ChatbotPage />
             </ProtectedRoute>
           }
         />
