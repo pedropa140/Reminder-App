@@ -6,7 +6,8 @@ import logo from '../icon.png';
 import '../App.css';
 import TimerAlertPopup from './TimerAlertPopup';
 import LogoutPopup from './LogoutPopup'; // Import LogoutPopup
-import { deleteTag, getAllTags } from '../api';
+import { deleteTag, getAllTags, handleAddTag } from '../api';
+import axios from 'axios';
 
 
 const PomodoroTimer = () => {
@@ -24,7 +25,7 @@ const PomodoroTimer = () => {
     const [tags, setTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
     const [newTag,setNewTag] = useState('');
-    
+    const API_URL = 'http://localhost:5000';
     const [darkMode, setDarkMode] = useState(false);
 
 
@@ -267,9 +268,9 @@ const PomodoroTimer = () => {
                                     sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}
                                 >
                                     <Typography variant="body1">{tag}</Typography>
-                                    <IconButton onClick={() => handleDeleteTag(tag)}>
-                                        <FaTrash />
-                                    </IconButton>
+                                    <Button onClick={() => deleteTag(tag)}>
+                                    
+                                    </Button>
                                 </Box>
                             ))
                         ) : (
