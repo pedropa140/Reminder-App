@@ -6,6 +6,8 @@ import logo from '../icon.png';
 import '../App.css';
 import TimerAlertPopup from './TimerAlertPopup';
 import LogoutPopup from './LogoutPopup'; // Import LogoutPopup
+import { deleteTag, getAllTags } from '../api';
+
 
 const PomodoroTimer = () => {
     const [workDuration, setWorkDuration] = useState(25);
@@ -33,6 +35,47 @@ const PomodoroTimer = () => {
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
+
+    useEffect(() => {
+        const fetchTags = async() => {
+            try {
+                const response = await getAllTags(email); // grab user's tags
+                setTags(response.data.tags);//set tags
+            }
+            catch (error) {
+                console.error ("Error fetching tags:", error);
+            }
+        };
+        fetchTags();
+    }, [email]);
+
+    const addTags = async() => {
+        if (newTag.trim()) {
+            try {
+                const updatedTags = [...tags, newTag.trim()];
+                setTags(updatedTags);
+                setNewTag('');
+
+                await axios.post(`${API_URL}/timer/addTag`, { email, newTag: newTag.trim() });
+
+            }
+            catch(error) {
+                console.error("Error adding tag:", error)
+            }
+        }
+    };
+
+    const deleteTags = async (tagName) => {
+        try{
+            await deleteTag(email, tagName); 
+            setTags(tags.filter((tag) => tag !== tagName));
+
+        }
+        catch (error){
+            console.error("Error deleting tag:", error);
+        }
+    };
+
 
     useEffect(() => {
         let interval = null;
@@ -202,7 +245,7 @@ const PomodoroTimer = () => {
                     >
                         Reset
                     </Button>
-
+                    
                     <TimerAlertPopup
                         open={openAlert}
                         onClose={handleCancelAlert}
@@ -215,6 +258,35 @@ const PomodoroTimer = () => {
                         onClose={handleCloseLogoutPopup}
                         onConfirm={handleConfirmLogout}
                     />
+                    <Box sx={{ mt: 4, width: '100%' }}>
+                        <Typography variant="h6">Tags:</Typography>
+                        {tags.length > 0 ? (
+                            tags.map((tag, index) => (
+                                <Box
+                                    key={index}
+                                    sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}
+                                >
+                                    <Typography variant="body1">{tag}</Typography>
+                                    <IconButton onClick={() => handleDeleteTag(tag)}>
+                                        <FaTrash />
+                                    </IconButton>
+                                </Box>
+                            ))
+                        ) : (
+                            <Typography variant="body2">No tags available.</Typography>
+                        )}
+                    <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                                label="New Tag"
+                                value={newTag}
+                                onChange={(e) => setNewTag(e.target.value)}
+                                fullWidth
+                            />
+                            <Button onClick={handleAddTag} variant="contained" sx={{ ml: 2 }}>
+                                Add Tag
+                            </Button>
+                    </Box>
+                    </Box>
                 </Box>
             </Container>
         </div>
