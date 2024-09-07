@@ -3,6 +3,10 @@ import { Container, Typography, Box, Grid } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import logo from '../icon.png';
+import kusumPhoto from '../assets/kusum.jpg'; // Placeholder for Kusum's photo
+import pedroPhoto from '../assets/pedro.jpg'; // Placeholder for Pedro's photo
+import yejuPhoto from '../assets/yeju.jpg'; // Placeholder for YeJu's photo
+import elizabethPhoto from '../assets/elizabeth.jpg'; // Placeholder for Elizabeth's photo
 import '../App.css';
 
 const AboutPage = () => {
@@ -11,6 +15,13 @@ const AboutPage = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
+
+  const creators = [
+    { name: 'Kusum Gandham', role: 'Lead Developer', description: 'Kusum is a skilled developer with a passion for creating efficient and scalable code.', photo: kusumPhoto },
+    { name: 'Pedro Pajarillo', role: 'UI/UX Designer', description: 'Pedro is an expert in designing intuitive and visually appealing user interfaces.', photo: pedroPhoto },
+    { name: 'YeJu Lee', role: 'Backend Engineer', description: 'YeJu specializes in backend development, ensuring robust and secure server-side logic.', photo: yejuPhoto },
+    { name: 'Elizabeth Laub', role: 'Project Manager', description: 'Elizabeth excels in managing projects and coordinating team efforts to achieve project goals.', photo: elizabethPhoto },
+  ];
 
   return (
     <div className={darkMode ? 'app dark-mode' : 'app'}>
@@ -146,63 +157,71 @@ const AboutPage = () => {
       </Container>
 
       <Container maxWidth="md" sx={{ mb: '50px' }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            p: 4,
-            borderRadius: '12px',
-            backgroundColor: darkMode ? '#444' : '#f9f9f9',
-            color: darkMode ? '#f0f0f0' : '#333',
-            boxShadow: 3,
-            mb: '50px',
-          }}
-        >
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Meet the Creators
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 4 }}>
-            Our team of dedicated developers and designers worked hard to bring ReminderApp to life. Here are the talented individuals who made it all happen:
-          </Typography>
-          <Grid container spacing={4} sx={{ width: '100%' }}>
-            {[
-              { name: 'Kusum Gandham', role: 'Lead Developer', description: 'Kusum is a skilled developer with a passion for creating efficient and scalable code.' },
-              { name: 'Pedro Pajarillo', role: 'UI/UX Designer', description: 'Pedro is an expert in designing intuitive and visually appealing user interfaces.' },
-              { name: 'YeJu Lee', role: 'Backend Engineer', description: 'YeJu specializes in backend development, ensuring robust and secure server-side logic.' },
-              { name: 'Elizabeth Laub', role: 'Project Manager', description: 'Elizabeth excels in managing projects and coordinating team efforts to achieve project goals.' },
-            ].map((creator, index) => (
-              <Grid item xs={12} key={index}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    p: 3,
-                    borderRadius: '8px',
-                    backgroundColor: darkMode ? '#555' : '#fff',
-                    boxShadow: 1,
-                    textAlign: 'center',
-                    width: '100%',
-                    maxWidth: '500px',
-                    margin: 'auto',
-                  }}
-                >
-                  <Typography variant="h6" sx={{ mb: 1 }}>
-                    {creator.name}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1 }}>
-                    {creator.role}
-                  </Typography>
-                  <Typography variant="body2">
-                    {creator.description}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </Container>
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      p: 4,
+      borderRadius: '12px',
+      backgroundColor: darkMode ? '#444' : '#f9f9f9',
+      color: darkMode ? '#f0f0f0' : '#333',
+      boxShadow: 3,
+      mb: '50px',
+    }}
+  >
+    <Typography variant="h5" sx={{ mb: 2 }}>
+      Meet the Creators
+    </Typography>
+    <Typography variant="body1" sx={{ mb: 4 }}>
+      Our team of dedicated developers and designers worked hard to bring ReminderApp to life. Here are the talented individuals who made it all happen:
+    </Typography>
+    <Grid container spacing={4} sx={{ width: '100%' }}>
+      {creators.map((creator, index) => (
+        <Grid item xs={12} key={index}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              p: 3,
+              borderRadius: '8px',
+              backgroundColor: darkMode ? '#555' : '#fff',
+              boxShadow: 1,
+              textAlign: 'center',
+              width: '100%',
+              maxWidth: '500px', // Maximum width for each box
+              margin: 'auto',
+            }}
+          >
+            <img
+              src={creator.photo}
+              alt={creator.name}
+              style={{
+                width: '150px', // Square width
+                height: '200px', // Square height
+                borderRadius: '5px', // Rounded corners
+                objectFit: 'cover',
+                marginBottom: '10px',
+              }}
+            />
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {creator.name}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              {creator.role}
+            </Typography>
+            <Typography variant="body2">
+              {creator.description}
+            </Typography>
+          </Box>
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
+</Container>
+
+
     </div>
   );
 };
