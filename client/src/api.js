@@ -106,5 +106,7 @@ export const deleteGoal = async (email, goalTitle) => {
       console.error('Error deleting task:', error);
       throw error;
     }
+
+    
   };
   

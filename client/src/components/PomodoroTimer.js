@@ -18,8 +18,17 @@ const PomodoroTimer = () => {
     const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const alarmSound = useRef(null);
     const navigate = useNavigate(); // Hook for navigation
-
+    const email = sessionStorage.getItem('userEmail'); //user email to tie the tags to 
+    const [tags, setTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [newTag,setNewTag] = useState('');
+    
     const [darkMode, setDarkMode] = useState(false);
+
+
+
+
+
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
