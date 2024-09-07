@@ -376,7 +376,20 @@ app.delete('/users/removeReminder', async (req, res) => {
     }
 });
 
-
+app.post("/gemini", async (req, res) => {
+    const { history, message } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
+    const chat = model.startChat({
+      history: req.body.history,
+    });
+    const msg = req.body.message;
+  
+    const result = await chat.sendMessage(msg);
+    const response = await result.response;
+    const text = response.text();
+    res.send(text);
+  });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
