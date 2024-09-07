@@ -1,44 +1,86 @@
 import React, { useState } from 'react';
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { IconButton } from "@mui/material";
+import { Container, Box, Typography } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import { ThumbDown, ThumbDownOutlined, ThumbUp, ThumbUpOutlined, Refresh } from "@mui/icons-material";
 import './Chatbot.css';
+import '../App.css';
 import ReactStars from 'react-stars';
+import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
+import LogoutPopup from './LogoutPopup';
+import SettingsPopup from './SettingsPopup'
+import { sendMessage, regenerateMessage, updateUserInfo } from '../api';
+import logo from '../icon.png'; // Import API functions
 
 export default function ChatbotPage() {
   const [userInput, setUserInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [theme, setTheme] = useState("light");
   const [error, setError] = useState(null);
+  const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
+  const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
+  const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
+  
+  const navigate = useNavigate();
+  const [darkMode, setDarkMode] = React.useState(false);
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
-  const MODEL_NAME = "gemini-1.5-flash";
-  const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GENAI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const generationConfig = {
-    temperature: 0.9,
-    topK: 1,
-    topP: 1,
-    maxOutputTokens: 2048,
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
   };
 
-  const safetySettings = [
-    {
-      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-    {
-      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-      threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-    },
-  ];
+  const handleLogoutClick = () => {
+    setPopupOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    sessionStorage.clear();
+    setPopupOpen(false);
+    navigate('/logged-out', { replace: true });
+  };
+
+  const handleClosePopup = () => {
+    setPopupOpen(false);
+  };
+
+  const handleSettingsClick = () => {
+    setSettingsOpen(true); // Open the settings popup
+  };
+
+  const handleCloseSettings = () => {
+    setSettingsOpen(false); // Close the settings popup
+  };
+
+  // Function to handle user info update from SettingsPopup
+  const handleUpdateUserInfo = async (updatedData) => {
+    try {
+      // Make API call to update user information
+      const response = await updateUserInfo(updatedData);
+      
+      // Update the sessionStorage with the new data
+      if (response.user) {
+        sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
+        sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
+        sessionStorage.setItem('userEmail', updatedData.newEmail || email);
+
+        // Update the local state to reflect the new data
+        setFirstName(updatedData.name.split(' ')[0]);
+        setLastName(updatedData.name.split(' ')[1] || '');
+        setEmail(updatedData.newEmail || email);
+      }
+
+      setSettingsOpen(false); // Close the settings popup
+    } catch (error) {
+      console.error('Failed to update user info:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (!sessionStorage.getItem('userEmail')) {
+      navigate('/logged-out', { replace: true });
+    }
+  }, [navigate]);
 
   const handleButtonClick = (index, button) => {
     setMessages((prevMessages) => {
@@ -90,22 +132,10 @@ export default function ChatbotPage() {
       const originalUserMessage = messages[index - 1];
 
       if (originalUserMessage && originalUserMessage.role === "user") {
-        const result = await model.generateContent(originalUserMessage.text);
-        const response = await result.response;
-        const markdownText = response.text();
-
-        let formattedText = markdownText
-          .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-          .replace(/^\* /gm, "<li>")
-          .replace(/<\/li>\s*<li>/g, "</li><li>")
-          .replace(/<\/li>\s*$/g, "</li>")
-          .replace(/<li>/g, "<li>")
-          .replace(/<\/li>/g, "</li>")
-          .replace(/^(<li>.*<\/li>\s*)+$/gm, "<ul>$&</ul>")
-          .replace(/\n/g, "<br>");
+        const regeneratedResponse = await regenerateMessage(originalUserMessage.text);
 
         const newBotMessage = {
-          text: formattedText,
+          text: regeneratedResponse,
           role: "bot",
           timestamp: new Date(),
           thumbsUp: false,
@@ -121,55 +151,34 @@ export default function ChatbotPage() {
     }
   };
 
-  const handleSendMessage = async (replacePrompt = false) => {
+  const handleSendMessage = async () => {
+    if (userInput.trim() === '') return;
+
+    const userMessage = {
+      text: userInput,
+      role: "user",
+      timestamp: new Date(),
+      thumbsUp: false,
+      thumbsDown: false,
+    };
+
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
     try {
-      if (userInput.trim() === '') return;
-      const userMessage = {
-        text: userInput,
-        role: "user",
-        timestamp: new Date(),
-        thumbsUp: false,
-        thumbsDown: false,
-      };
-
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-      const result = await model.generateContent(userInput);
-      const response = await result.response;
-      const markdownText = response.text();
-
-      let formattedText = markdownText
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        .replace(/^\* /gm, '<li>')
-        .replace(/<\/li>\s*<li>/g, '</li><li>')
-        .replace(/<\/li>\s*$/g, '</li>')
-        .replace(/<li>/g, '<li>')
-        .replace(/<\/li>/g, '</li>')
-        .replace(/^(<li>.*<\/li>\s*)+$/gm, '<ul>$&</ul>')
-        .replace(/\n/g, '<br>');
+      const botResponse = await sendMessage(userInput);
 
       const botMessage = {
-        text: formattedText,
+        text: botResponse,
         role: "bot",
         timestamp: new Date(),
         thumbsUp: false,
         thumbsDown: false,
       };
 
-      if (replacePrompt) {
-        setMessages((prevMessages) => prevMessages.map((msg, idx) => {
-          if (msg.role === "user" && !msg.thumbsUp && !msg.thumbsDown) {
-            return { ...msg, text: formattedText };
-          }
-          return msg;
-        }));
-      } else {
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      }
-
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
       setUserInput('');
     } catch (error) {
-      setError("Failed to Send Message. Please Try Again" + error);
+      setError("Failed to send message. Please try again.");
     }
   };
 
@@ -203,15 +212,6 @@ export default function ChatbotPage() {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const { primary, secondary, accent, text } = getThemeColors();
-
   const handleRatingChange = (newRating) => {
     let message;
 
@@ -233,7 +233,32 @@ export default function ChatbotPage() {
     alert(message);
   };
 
+  const { primary, secondary, accent, text } = getThemeColors();
+
   return (
+    <div className={darkMode ? 'app dark-mode' : 'app'}>
+      <nav className="navbar">
+        <div className="logo">
+          <img src={logo} alt="Logo" />
+        </div>
+        <ul className="nav-links">
+          <li><Link to="/user">HOME</Link></li>
+          <li><Link to="/user/goal">TASKS</Link></li>
+          <li><Link to="/user/calendar">CALENDAR</Link></li>
+          <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>
+          <li><Link to="/user/contact">CONTACT</Link></li>
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <div className="settings-icon" onClick={handleSettingsClick}>
+            <FaCog />
+          </div>
+        </ul>
+        <div className="nav-actions">
+          <div className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </div>
+        </div>
+      </nav>
     <div className={`chat-container ${primary}`}>
       <header className="chat-header">
         <h1 className={`title ${text}`}>Gemini Chat</h1>
@@ -298,12 +323,12 @@ export default function ChatbotPage() {
         <textarea
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={handleKeyPress}
           placeholder="Type your message..."
           className={`input-textarea ${text}`}
         />
         <button onClick={() => handleSendMessage()} className={`send-button ${accent}`}>Send</button>
       </footer>
+    </div>
     </div>
   );
 }

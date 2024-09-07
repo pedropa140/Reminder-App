@@ -199,3 +199,72 @@ export const deleteUser = async (email) => {
         throw error;
     }
 };
+const formatResponseText = (text) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")                // Bold formatting
+      .replace(/^\* /gm, "<li>")                             // Convert '*' bullet points to list items
+      .replace(/<\/li>\s*<li>/g, "</li><li>")                // Properly close list items
+      .replace(/<\/li>\s*$/g, "</li>")                       // Close last list item
+      .replace(/<li>/g, "<li>")                              // List item open tag
+      .replace(/<\/li>/g, "</li>")                           // List item close tag
+      .replace(/^(<li>.*<\/li>\s*)+$/gm, "<ul>$&</ul>")      // Wrap multiple list items in <ul> tags
+      .replace(/\n/g, "<br>");                               // Replace newlines with <br> tags
+  };
+  
+  /**
+   * Sends a message to the backend to generate a chatbot response.
+   * @param {string} prompt - The user's input prompt for the chatbot.
+   * @returns {Promise<string>} - The chatbot's response.
+   */
+  export const sendMessage = async (prompt) => {
+    try {
+      const response = await fetch(`${API_URL}/api/send-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+  
+      const data = await response.json();
+      const formattedResponse = formatResponseText(data.responseText); // Apply formatting
+  
+      return formattedResponse;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  };
+  
+  /**
+   * Regenerates the chatbot's response for a previous user message.
+   * @param {string} prompt - The user's input prompt for which to regenerate the response.
+   * @returns {Promise<string>} - The chatbot's regenerated response.
+   */
+  export const regenerateMessage = async (prompt) => {
+    try {
+      const response = await fetch(`${API_URL}/api/regenerate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to regenerate message');
+      }
+  
+      const data = await response.json();
+      const formattedResponse = formatResponseText(data.responseText); // Apply formatting
+  
+      return formattedResponse;
+    } catch (error) {
+      console.error('Error regenerating message:', error);
+      throw error;
+    }
+  };

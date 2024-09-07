@@ -13,7 +13,6 @@ app.use(cors());
 // Backend Port + MongoDB connection
 const port = process.env.PORT || 5000;
 const mongodb_url = process.env.MONGODB_URL;
-const genAI = new GoogleGenerativeAI(process.env.GENAI_API_KEY);
 
 mongoose.connect(mongodb_url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
@@ -438,6 +437,47 @@ app.post("/gemini", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Failed to delete user", error: error.message });
     }
+});
+
+const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GENAI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const generationConfig = {
+  temperature: 0.9,
+  topK: 1,
+  topP: 1,
+  maxOutputTokens: 2048,
+};
+
+// POST route to handle user messages
+app.post('/api/send-message', async (req, res) => {
+  const { prompt } = req.body;
+  
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const responseText = response.text();
+
+    res.json({ responseText });
+  } catch (error) {
+    console.error('Error generating response:', error);
+    res.status(500).json({ error: 'Failed to generate response' });
+  }
+});
+
+// POST route to regenerate a bot message
+app.post('/api/regenerate', async (req, res) => {
+  const { prompt } = req.body;
+  
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const responseText = response.text();
+
+    res.json({ responseText });
+  } catch (error) {
+    console.error('Error regenerating response:', error);
+    res.status(500).json({ error: 'Failed to regenerate response' });
+  }
 });
 
 app.listen(port, () => {
