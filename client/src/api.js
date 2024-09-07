@@ -143,37 +143,3 @@ export const removeReminder = async (email, month, day, year) => {
         throw error;
     }
 };
-
-// api.js
-
-// Send message to Gemini AI
-export const sendMessageToGemini = async (history, message) => {
-    try {
-      const response = await fetch(`${API_URL}/gemini`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ history, message }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.text();
-      return data;
-    } catch (error) {
-      console.error('Error sending message to Gemini:', error);
-      throw error;
-    }
-  };
-  
-// Get all reminders for a user
-export const getReminders = async (email) => {
-    try {
-        const response = await axios.get(`${API_URL}/users/getReminders/${email}`);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching reminders:", error);
-        throw error;
-    }
-};
