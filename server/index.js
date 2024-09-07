@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const UserModel = require('./models/Users');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 app.use(express.json());
 app.use(cors());
@@ -12,6 +13,7 @@ app.use(cors());
 // Backend Port + MongoDB connection
 const port = process.env.PORT || 5000;
 const mongodb_url = process.env.MONGODB_URL;
+const genAI = new GoogleGenerativeAI(process.env.GENAI_API_KEY);
 
 mongoose.connect(mongodb_url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
@@ -407,6 +409,34 @@ app.put('/users/updateUserInfo', async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: "Failed to update user info", error: error.message });
+    }
+});
+app.post("/gemini", async (req, res) => {
+    const { history, message } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
+    const chat = model.startChat({
+      history: req.body.history,
+    });
+    const msg = req.body.message;
+  
+    const result = await chat.sendMessage(msg);
+    const response = await result.response;
+    const text = response.text();
+    res.send(text);
+  });
+
+  app.delete('/users/deleteUser', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const result = await UserModel.findOneAndDelete({ email });
+        if (result) {
+            res.status(200).json({ message: "User deleted successfully" });
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Failed to delete user", error: error.message });
     }
 });
 
