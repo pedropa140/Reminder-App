@@ -38,6 +38,7 @@ const LoginPage = () => {
         const user = response.data;
         const isPasswordMatch = await bcrypt.compare(formData.password, user.password);
         if (isPasswordMatch) {
+          // Store user details in sessionStorage
           sessionStorage.setItem('userEmail', formData.email);
           sessionStorage.setItem('firstName', user.firstName);
           sessionStorage.setItem('lastName', user.lastName);

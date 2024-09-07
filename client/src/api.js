@@ -59,7 +59,6 @@ export const updateGoalStatus = async (email, goalTitle, completed) => {
     }
 };
 
-
 // Get completed goals for user
 export const getCompletedGoals = async (email) => {
     try {
@@ -71,8 +70,7 @@ export const getCompletedGoals = async (email) => {
     }
 };
 
-
-//get pair information for user
+// Get pair information for user
 export const getPair = async(email) => {
     try {
         const response = await axios.get(`${API_URL}/users/getPair/${email}`);
@@ -83,39 +81,40 @@ export const getPair = async(email) => {
     }
 }
 
-// set a pair information for user
+// Set pair information for user
 export const setPair = async (email) => {
     const response = await axios.put(`${API_URL}/users/setPair`, { email });
     return response;
 };
 
-// Delete goal given email and goal time
+// Delete goal given email and goal title
 export const deleteGoal = async (email, goalTitle) => {
     try {
-      const response = await axios.delete(`${API_URL}/users/deleteGoal`, {
-        data: { email, goalTitle }
-      });
-      return response;
+        const response = await axios.delete(`${API_URL}/users/deleteGoal`, {
+            data: { email, goalTitle }
+        });
+        return response;
     } catch (error) {
-      console.error('Error deleting goal:', error);
-      throw error;
+        console.error('Error deleting goal:', error);
+        throw error;
     }
-  };
-  
-  // delete task given email, goal, and task name
-  export const deleteTask = async (email, goalTitle, taskName) => {
+};
+
+// Delete task given email, goal, and task name
+export const deleteTask = async (email, goalTitle, taskName) => {
     try {
-      const response = await axios.delete(`${API_URL}/users/deleteTask`, {
-        data: { email, goalTitle, taskName }
-      });
-      return response;
+        const response = await axios.delete(`${API_URL}/users/deleteTask`, {
+            data: { email, goalTitle, taskName }
+        });
+        return response;
     } catch (error) {
-      console.error('Error deleting task:', error);
-      throw error;
+        console.error('Error deleting task:', error);
+        throw error;
     }
-  };
-  
-  export const addReminder = async (email, month, day, year, reminder) => {
+};
+
+// Add a reminder
+export const addReminder = async (email, month, day, year, reminder) => {
     try {
         const response = await axios.post(`${API_URL}/users/addReminder`, {
             email,
@@ -151,6 +150,17 @@ export const getReminders = async (email) => {
         return response.data;
     } catch (error) {
         console.error("Error fetching reminders:", error);
+        throw error;
+    }
+};
+
+// Update user information
+export const updateUserInfo = async (userData) => {
+    try {
+        const response = await axios.put(`${API_URL}/users/updateUserInfo`, userData);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating user info:', error);
         throw error;
     }
 };

@@ -4,6 +4,7 @@ const app = express();
 const mongoose = require('mongoose');
 const UserModel = require('./models/Users');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 app.use(express.json());
 app.use(cors());
@@ -205,7 +206,7 @@ app.get("/users/getCompletedGoals/:email", async (req, res) => {
     }
 });
 
-//get the pair json
+// Get the pair JSON
 app.get("/users/getPair/:email", async (req, res) => {
     try {
         const { email } = req.params;
@@ -264,8 +265,6 @@ app.put("/users/setPair", async (req, res) => {
     }
 });
 
-
-
 // Delete a goal
 app.delete('/users/deleteGoal', async (req, res) => {
     const { email, goalTitle } = req.body;
@@ -321,6 +320,7 @@ app.get('/users/getReminders/:email', async (req, res) => {
     }
 });
 
+// Add a reminder
 app.post('/users/addReminder', async (req, res) => {
     try {
         const { email, month, day, year, reminder } = req.body;
@@ -350,7 +350,6 @@ app.post('/users/addReminder', async (req, res) => {
         res.status(500).json({ message: "Failed to add reminder", error: error.message });
     }
 });
-    
 
 // Remove a reminder
 app.delete('/users/removeReminder', async (req, res) => {
@@ -374,6 +373,42 @@ app.delete('/users/removeReminder', async (req, res) => {
     }
 });
 
+// Update user information
+app.put('/users/updateUserInfo', async (req, res) => {
+    const { firstName, lastName, email, currentEmail, currentPassword, newPassword } = req.body;
+
+    try {
+        const user = await UserModel.findOne({ email: currentEmail });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if currentPassword is provided and verify it
+        if (currentPassword) {
+            const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
+            if (!isPasswordMatch) {
+                return res.status(400).json({ message: "Current password is incorrect" });
+            }
+
+            // Update the password if newPassword is provided
+            if (newPassword) {
+                const hashedPassword = await bcrypt.hash(newPassword, 10);
+                user.password = hashedPassword;
+            }
+        }
+
+        // Update other user information
+        if (firstName) user.firstName = firstName;
+        if (lastName) user.lastName = lastName;
+        if (email) user.email = email;
+
+        await user.save();
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to update user info", error: error.message });
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
