@@ -8,7 +8,7 @@ import './Calendar.css';
 import ReminderModal from './ReminderModal';
 import { addReminder, removeReminder } from '../api'; // Import API methods
 
-const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const daysOfWeek = ['Sunday', 'Monday', 'Tueday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
 
 function generateCalendar(year, month) {
   const date = new Date(year, month);
@@ -16,7 +16,7 @@ function generateCalendar(year, month) {
   const firstDay = date.getDay();
   const lastDate = new Date(year, month + 1, 0).getDate();
 
-  let week = Array(firstDay).fill(null);
+  let week = Array(firstDay).fill(null); // Create initial week with empty days
 
   for (let day = 1; day <= lastDate; day++) {
     week.push(day);
@@ -25,7 +25,12 @@ function generateCalendar(year, month) {
       week = [];
     }
   }
-  if (week.length) {
+
+  // Fill the last week with null values if it has less than 7 days
+  if (week.length > 0) {
+    while (week.length < 7) {
+      week.push(null); // Add empty days to fill the week
+    }
     calendar.push(week);
   }
 
@@ -108,12 +113,13 @@ function CalendarPage() {
             console.error('Error adding reminder:', error);
         }
     }
-};
-
+  };
 
   const closeModal = () => {
     setShowModal(false);
   };
+
+  const today = new Date();
 
   return (
     <div className={darkMode ? 'app dark-mode' : 'app'}>
@@ -150,7 +156,9 @@ function CalendarPage() {
               {week.map((day, dayIndex) => (
                 <div
                   key={dayIndex}
-                  className="day"
+                  className={`day ${
+                    day && today.getDate() === day && today.getMonth() === month && today.getFullYear() === year ? 'current-day' : ''
+                  }`}
                   onClick={() => handleDayClick(day)}
                 >
                   {day}
@@ -170,7 +178,7 @@ function CalendarPage() {
         )}
       </div>
       <LogoutPopup
-        open={popupOpen} // Add this line
+        open={popupOpen}
         onConfirm={handleConfirmLogout}
         onClose={handleClosePopup}
       />
