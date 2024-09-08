@@ -6,22 +6,22 @@ import '../App.css';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
-import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals, deleteGoal, deleteTask, updateUserInfo } from '../api';
+import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals, deleteGoal, deleteTask, updateUserInfo, getStreakAndLastActivity, updateStreakAndLastActivity } from '../api';
 
 const GoalPage = () => {
   const [goal, setGoalTitle] = useState('');
   const [tasks, setTasks] = useState(['']);
   const [fetchedGoals, setFetchedGoals] = useState([]);
   const [completedGoals, setCompletedGoals] = useState([]);
-  // const email = sessionStorage.getItem('userEmail');
+  const [streak, setStreak] = useState(0); // State for streak
   const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
   const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
   const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
-  
+
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = React.useState(false);
   const [popupOpen, setPopupOpen] = React.useState(false);
-  const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   const fetchGoalsAndCompletedGoals = () => {
     if (email) {
@@ -52,8 +52,21 @@ const GoalPage = () => {
   };
 
   useEffect(() => {
-    fetchGoalsAndCompletedGoals();
-  }, [email]);
+    if (!sessionStorage.getItem('userEmail')) {
+      navigate('/logged-out', { replace: true });
+    } else {
+      // Fetch streak information when page loads
+      getStreakAndLastActivity(email)
+        .then(({ streak }) => {
+          setStreak(streak); // Set the streak in state
+        })
+        .catch(error => {
+          console.error('Error fetching streak information:', error);
+        });
+
+      fetchGoalsAndCompletedGoals();
+    }
+  }, [email, navigate]);
 
   const handleAddTask = () => {
     setTasks([...tasks, '']);
@@ -92,6 +105,7 @@ const GoalPage = () => {
           updateGoalStatus(email, goalTitle, true)
             .then(() => {
               console.log('Goal status updated successfully');
+              handleStreakUpdate(); // Call streak update after goal completion
               fetchGoalsAndCompletedGoals(); // Refetch goals and completed goals
             })
             .catch(error => {
@@ -104,11 +118,37 @@ const GoalPage = () => {
       });
   };
 
+  const handleStreakUpdate = async () => {
+    try {
+      const { streak, lastActivityDate } = await getStreakAndLastActivity(email);
+      const lastActivity = new Date(lastActivityDate);
+      const currentDate = new Date();
+      const timeDiff = Math.abs(currentDate - lastActivity);
+      const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+      let updatedStreak;
+      if (hoursDiff <= 24) {
+        updatedStreak = streak + 1;
+      } else {
+        updatedStreak = 1;
+      }
+
+      // Update the backend
+      await updateStreakAndLastActivity(email, updatedStreak, currentDate);
+
+      // Update the local state
+      setStreak(updatedStreak);
+
+      console.log(`Streak updated to: ${updatedStreak}`);
+    } catch (error) {
+      console.error('Error updating streak and last activity date:', error);
+    }
+  };
+
   const handleDeleteGoal = (goalTitle, goalIndex) => {
     deleteGoal(email, goalTitle)
       .then(() => {
         console.log(`Goal "${goalTitle}" deleted successfully.`);
-        // Remove goal from state
         const updatedGoals = [...fetchedGoals];
         updatedGoals.splice(goalIndex, 1); // Remove the deleted goal from the array
         setFetchedGoals(updatedGoals);
@@ -118,12 +158,11 @@ const GoalPage = () => {
       });
   };
 
-const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
+  const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
     const goalTitle = fetchedGoals[goalIndex].title;
     deleteTask(email, goalTitle, taskName)
       .then(() => {
         console.log(`Task "${taskName}" deleted successfully.`);
-        // Remove task from state
         const updatedGoals = [...fetchedGoals];
         updatedGoals[goalIndex].activeTasks.splice(taskIndex, 1); // Remove the deleted task from the array
         setFetchedGoals(updatedGoals);
@@ -132,7 +171,6 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
         console.error('Error deleting task:', error);
       });
   };
-
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -153,42 +191,32 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
   };
 
   const handleSettingsClick = () => {
-    setSettingsOpen(true); // Open the settings popup
+    setSettingsOpen(true);
   };
 
   const handleCloseSettings = () => {
-    setSettingsOpen(false); // Close the settings popup
+    setSettingsOpen(false);
   };
 
-  // Function to handle user info update from SettingsPopup
   const handleUpdateUserInfo = async (updatedData) => {
     try {
-      // Make API call to update user information
       const response = await updateUserInfo(updatedData);
       
-      // Update the sessionStorage with the new data
       if (response.user) {
         sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
         sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
         sessionStorage.setItem('userEmail', updatedData.newEmail || email);
 
-        // Update the local state to reflect the new data
         setFirstName(updatedData.name.split(' ')[0]);
         setLastName(updatedData.name.split(' ')[1] || '');
         setEmail(updatedData.newEmail || email);
       }
 
-      setSettingsOpen(false); // Close the settings popup
+      setSettingsOpen(false);
     } catch (error) {
       console.error('Failed to update user info:', error);
     }
   };
-
-  React.useEffect(() => {
-    if (!sessionStorage.getItem('userEmail')) {
-      navigate('/logged-out', { replace: true });
-    }
-  }, [navigate]);
 
   const handleSubmitGoal = () => {
     if (goal && tasks.length > 0) {
@@ -225,13 +253,20 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
             <FaCog />
           </div>
         </ul>
-        <div className="nav-actions">
-          <div className="theme-toggle" onClick={toggleDarkMode}>
-            {darkMode ? <FaSun /> : <FaMoon />}
-          </div>
+        <div className="mode-icon" onClick={toggleDarkMode}>
+          {darkMode ? <FaSun /> : <FaMoon />}
         </div>
       </nav>
       <Container>
+        {/* Streak Section */}
+        <Box mt={4}>
+          <Typography variant="h4">Your Current Streak</Typography>
+          <Typography variant="h6">
+            {streak} day{streak === 1 ? '' : 's'} in a row!
+          </Typography>
+        </Box>
+
+        {/* Goal Submission Form */}
         <Box mt={4}>
           <Typography variant="h4">Set Your Goal</Typography>
           <TextField
@@ -256,7 +291,7 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
           <Button variant="contained" onClick={handleSubmitGoal}>Submit Goal</Button>
         </Box>
 
-        {/* Display all fetched goals */}
+        {/* Active Goals */}
         {fetchedGoals.length > -1 ? (
           <Box mt={4}>
             <Typography variant="h5">Your Goals</Typography>
@@ -297,7 +332,7 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
           <Typography variant="body1">No active goals available</Typography>
         )}
 
-        {/* Display completed goals */}
+        {/* Completed Goals */}
         {completedGoals.length > -1 ? (
           <Box mt={4}>
             <Typography variant="h5">Completed Goals</Typography>
@@ -325,7 +360,7 @@ const handleDeleteTask = (goalIndex, taskIndex, taskName) => {
         firstName={firstName}
         lastName={lastName}
         email={email}
-        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
+        onUpdateUserInfo={handleUpdateUserInfo}
       />
     </div>
   );

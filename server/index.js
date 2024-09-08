@@ -36,6 +36,7 @@ app.post("/users/createUser", async (req, res) => {
     try {
         console.log('Creating new user with data:', req.body);
         const user = req.body;
+        user.lastActivityDate = new Date(); // Set the last activity date to the current date
         const newUser = new UserModel(user);
         await newUser.save();
         console.log('User created:', user);
@@ -45,6 +46,7 @@ app.post("/users/createUser", async (req, res) => {
         res.status(500).json({ message: "Failed to create user", error: error.message });
     }
 });
+
 
 // Get user based on email
 app.get("/users/getUser/:email", async (req, res) => {
@@ -549,6 +551,61 @@ app.post('/timer/addTag', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: "Error adding tag", error: error.message });
+    }
+});
+
+// Endpoint to retrieve streak and lastActivityDate by email
+app.get("/users/streak", async (req, res) => {
+    try {
+        const email = req.query.email; // Get the email from the query parameter
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        // Find the user by their email
+        const user = await UserModel.findOne({ email: email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Return streak and lastActivityDate
+        res.status(200).json({
+            streak: user.streak,
+            lastActivityDate: user.lastActivityDate
+        });
+    } catch (error) {
+        console.error("Error retrieving streak and lastActivityDate:", error);
+        res.status(500).json({ message: "Failed to retrieve data", error: error.message });
+    }
+});
+
+// Endpoint to modify streak and lastActivityDate by email
+app.put("/users/streak", async (req, res) => {
+    try {
+        const { email, streak, lastActivityDate } = req.body;
+
+        if (!email || streak === undefined || !lastActivityDate) {
+            return res.status(400).json({ message: "Email, streak, and lastActivityDate are required" });
+        }
+
+        // Find the user and update their streak and lastActivityDate
+        const updatedUser = await UserModel.findOneAndUpdate(
+            { email: email },
+            { streak: streak, lastActivityDate: new Date(lastActivityDate) },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({
+            message: "User streak and lastActivityDate updated successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error("Error updating streak and lastActivityDate:", error);
+        res.status(500).json({ message: "Failed to update data", error: error.message });
     }
 });
 

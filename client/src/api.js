@@ -9,10 +9,15 @@ export const getUsers = async () => {
 }
 
 // Create a user
-export const createUser = async (user) => {
-    const response = await axios.post(`${API_URL}/users/createUser`, user);
-    return response;
-}
+export const createUser = async (userData) => {
+    try {
+        const response = await axios.post(`${API_URL}/users/createUser`, userData);
+        return response;
+    } catch (error) {
+        console.error('Error creating user:', error);
+        throw error;
+    }
+};
 
 // Get user based on email
 export const getUser = async (email) => {
@@ -71,7 +76,7 @@ export const getCompletedGoals = async (email) => {
 };
 
 // Get pair information for user
-export const getPair = async(email) => {
+export const getPair = async (email) => {
     try {
         const response = await axios.get(`${API_URL}/users/getPair/${email}`);
         return response;
@@ -148,24 +153,24 @@ export const removeReminder = async (email, month, day, year) => {
 // Send message to Gemini AI
 export const sendMessageToGemini = async (history, message) => {
     try {
-      const response = await fetch(`${API_URL}/gemini`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ history, message }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.text();
-      return data;
+        const response = await fetch(`${API_URL}/gemini`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ history, message }),
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.text();
+        return data;
     } catch (error) {
-      console.error('Error sending message to Gemini:', error);
-      throw error;
+        console.error('Error sending message to Gemini:', error);
+        throw error;
     }
-  };
-  
+};
+
 // Get all reminders for a user
 export const getReminders = async (email) => {
     try {
@@ -201,83 +206,83 @@ export const deleteUser = async (email) => {
 };
 const formatResponseText = (text) => {
     return text
-      .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")                // Bold formatting
-      .replace(/^\* /gm, "<li>")                             // Convert '*' bullet points to list items
-      .replace(/<\/li>\s*<li>/g, "</li><li>")                // Properly close list items
-      .replace(/<\/li>\s*$/g, "</li>")                       // Close last list item
-      .replace(/<li>/g, "<li>")                              // List item open tag
-      .replace(/<\/li>/g, "</li>")                           // List item close tag
-      .replace(/^(<li>.*<\/li>\s*)+$/gm, "<ul>$&</ul>")      // Wrap multiple list items in <ul> tags
-      .replace(/\n/g, "<br>");                               // Replace newlines with <br> tags
-  };
-  
-  /**
-   * Sends a message to the backend to generate a chatbot response.
-   * @param {string} prompt - The user's input prompt for the chatbot.
-   * @returns {Promise<string>} - The chatbot's response.
-   */
-  export const sendMessage = async (prompt) => {
+        .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")                // Bold formatting
+        .replace(/^\* /gm, "<li>")                             // Convert '*' bullet points to list items
+        .replace(/<\/li>\s*<li>/g, "</li><li>")                // Properly close list items
+        .replace(/<\/li>\s*$/g, "</li>")                       // Close last list item
+        .replace(/<li>/g, "<li>")                              // List item open tag
+        .replace(/<\/li>/g, "</li>")                           // List item close tag
+        .replace(/^(<li>.*<\/li>\s*)+$/gm, "<ul>$&</ul>")      // Wrap multiple list items in <ul> tags
+        .replace(/\n/g, "<br>");                               // Replace newlines with <br> tags
+};
+
+/**
+ * Sends a message to the backend to generate a chatbot response.
+ * @param {string} prompt - The user's input prompt for the chatbot.
+ * @returns {Promise<string>} - The chatbot's response.
+ */
+export const sendMessage = async (prompt) => {
     try {
-      const response = await fetch(`${API_URL}/api/send-message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-  
-      const data = await response.json();
-      const formattedResponse = formatResponseText(data.responseText); // Apply formatting
-  
-      return formattedResponse;
+        const response = await fetch(`${API_URL}/api/send-message`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send message');
+        }
+
+        const data = await response.json();
+        const formattedResponse = formatResponseText(data.responseText); // Apply formatting
+
+        return formattedResponse;
     } catch (error) {
-      console.error('Error sending message:', error);
-      throw error;
+        console.error('Error sending message:', error);
+        throw error;
     }
-  };
-  
-  /**
-   * Regenerates the chatbot's response for a previous user message.
-   * @param {string} prompt - The user's input prompt for which to regenerate the response.
-   * @returns {Promise<string>} - The chatbot's regenerated response.
-   */
-  export const regenerateMessage = async (prompt) => {
+};
+
+/**
+ * Regenerates the chatbot's response for a previous user message.
+ * @param {string} prompt - The user's input prompt for which to regenerate the response.
+ * @returns {Promise<string>} - The chatbot's regenerated response.
+ */
+export const regenerateMessage = async (prompt) => {
     try {
-      const response = await fetch(`${API_URL}/api/regenerate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to regenerate message');
-      }
-  
-      const data = await response.json();
-      const formattedResponse = formatResponseText(data.responseText); // Apply formatting
-  
-      return formattedResponse;
+        const response = await fetch(`${API_URL}/api/regenerate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to regenerate message');
+        }
+
+        const data = await response.json();
+        const formattedResponse = formatResponseText(data.responseText); // Apply formatting
+
+        return formattedResponse;
     } catch (error) {
-      console.error('Error regenerating message:', error);
-      throw error;
+        console.error('Error regenerating message:', error);
+        throw error;
     }
-  };
-  //delete a tag
+};
+//delete a tag
 //get all the tags
 //supposedly no set tag.
 export const deleteTag = async (email, tagName) => {
-    try{
+    try {
         const response = await axios.delete(`${API_URL}/timer/deleteTag`, {
             data: { email, tagName }
-    });
-}
-    catch(error){
+        });
+    }
+    catch (error) {
         console.error('Error in deleting tag:', error);
         throw error;
     }
@@ -288,7 +293,7 @@ export const getAllTags = async (email) => {
         const response = await axios.get(`${API_URL}/users/getTags/${email}`);
         return response;
     }
-    catch (error){
+    catch (error) {
         console.error("Error in retrieving tags:", error);
         throw error;
     }
@@ -300,6 +305,33 @@ export const addTag = async (email, newTag) => {
         return response.data;
     } catch (error) {
         console.error('Error in adding tag:', error);
+        throw error;
+    }
+};
+
+export const getStreakAndLastActivity = async (email) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/streak`, {
+            params: { email }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error retrieving streak and lastActivityDate:', error);
+        throw error;
+    }
+};
+
+// Update streak and lastActivityDate
+export const updateStreakAndLastActivity = async (email, streak, lastActivityDate) => {
+    try {
+        const response = await axios.put(`${API_URL}/users/streak`, {
+            email,
+            streak,
+            lastActivityDate
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating streak and lastActivityDate:', error);
         throw error;
     }
 };

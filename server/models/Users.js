@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -63,8 +64,8 @@ const UserSchema = new mongoose.Schema({
     ],
     pair: {
         enable: {
-        type: Boolean,
-        default: false
+            type: Boolean,
+            default: false
         },
         partner: {
             type: String,
@@ -92,8 +93,16 @@ const UserSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
-})
+    }],
+    streak: {
+        type: Number,
+        default: 0
+    },
+    lastActivityDate: {
+        type: Date,
+        default: Date.now
+    }
+});
 
 const UserModel = mongoose.model("users", UserSchema);
 module.exports = UserModel;
