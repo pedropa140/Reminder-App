@@ -556,3 +556,34 @@ app.post('/timer/addTag', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+
+///generate flashcards using input
+app.post('/api/send-message', async (req, res) => {
+    const { prompt } = req.body;
+    const systemPrompt = `
+        You are a flashcard creator. Take in text and create exactly 10 flashcards from it.
+        Each flashcard should have a front and back, both one sentence long.
+        Return in the following JSON format:
+        {
+        "flashcards":[
+            {
+            "front": "Front of the card",
+            "back": "Back of the card"
+            }
+        ]
+        }
+        `
+    
+    try {
+      const result = await model.generateContent(systemPrompt+ prompt);
+      const response = await result.response;
+      const responseText = response.text();
+  
+      res.json({ responseText });
+    } catch (error) {
+      console.error('Error generating response:', error);
+      res.status(500).json({ error: 'Failed to generate response' });
+    }
+  });
+  

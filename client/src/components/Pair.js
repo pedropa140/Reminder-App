@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, Button, List, ListItem, ListItemText, Card, CardContent, Divider } from '@mui/material';
+import { Container, Box, Typography, Button, List, ListItem, ListItemText, Card, CardContent } from '@mui/material';
 import { getPair, setPair, getGoals } from '../api';  // API calls
 
 const PairPage = () => {
@@ -9,6 +9,7 @@ const PairPage = () => {
     const [userGoals, setUserGoals] = useState([]);
     const [partnerGoals, setPartnerGoals] = useState([]);
     const [noPartnerMessage, setNoPartnerMessage] = useState("");  // State for no partner message
+    const [noGoalsMessage, setNoGoalsMessage] = useState("");      // State for no goals message
 
     useEffect(() => {
         // Fetch current pairing status and goals
@@ -20,7 +21,13 @@ const PairPage = () => {
 
                 // Fetch goals for both the user and their partner
                 getGoals(email).then(response => {
-                    setUserGoals(response.data.activeGoals);
+                    const activeGoals = response.data.activeGoals;
+                    setUserGoals(activeGoals);
+                    if (activeGoals.length === 0) {
+                        setNoGoalsMessage("You must have an active goal to pair with someone.");
+                    } else {
+                        setNoGoalsMessage("");
+                    }
                 });
 
                 if (partnerData && partnerData.email) {
@@ -49,7 +56,13 @@ const PairPage = () => {
                     setPartnerGoals(response.data);
                 });
             })
-            .catch(error => console.error("Error pairing:", error));
+            .catch(error => {
+                if (error.response && error.response.status === 404) {
+                    setNoPartnerMessage("There are no active partners to pair with at the moment.");
+                } else {
+                    console.error("Error pairing:", error);
+                }
+            });
     };
 
     // Function to render tasks with completed ones crossed out
@@ -78,6 +91,13 @@ const PairPage = () => {
                     </Typography>
                 )}
 
+                {/* No Active Goals Message */}
+                {noGoalsMessage && (
+                    <Typography variant="h6" color="error" align="center" paragraph>
+                        {noGoalsMessage}
+                    </Typography>
+                )}
+
                 {/* Pairing Status Section */}
                 {pairingStatus ? (
                     <Box textAlign="center" mb={4}>
@@ -86,7 +106,7 @@ const PairPage = () => {
                         <Typography variant="body1" color="textSecondary">{partner.email}</Typography>
                     </Box>
                 ) : (
-                    !noPartnerMessage && (
+                    !noPartnerMessage && !noGoalsMessage && (
                         <Box textAlign="center" mb={4}>
                             <Button variant="contained" color="primary" onClick={handlePair}>
                                 Pair with a Partner
