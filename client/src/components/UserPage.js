@@ -5,18 +5,19 @@ import logo from '../icon.png';
 import '../App.css';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
-import SettingsPopup from './SettingsPopup'; // Import the SettingsPopup component
-import { updateUserInfo } from '../api'; // Import the updateUserInfo function for API call
+import SettingsPopup from './SettingsPopup'; 
+import { updateUserInfo, getStreakAndLastActivity } from '../api'; // Import the streak API call
 
 const UserPage = () => {
   const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
   const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
   const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
-  
+  const [streak, setStreak] = React.useState(0); // State for user's streak
+
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = React.useState(false);
   const [popupOpen, setPopupOpen] = React.useState(false);
-  const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -37,42 +38,46 @@ const UserPage = () => {
   };
 
   const handleSettingsClick = () => {
-    setSettingsOpen(true); // Open the settings popup
+    setSettingsOpen(true);
   };
 
   const handleCloseSettings = () => {
-    setSettingsOpen(false); // Close the settings popup
+    setSettingsOpen(false);
   };
 
-  // Function to handle user info update from SettingsPopup
   const handleUpdateUserInfo = async (updatedData) => {
     try {
-      // Make API call to update user information
       const response = await updateUserInfo(updatedData);
-      
-      // Update the sessionStorage with the new data
       if (response.user) {
         sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
         sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
         sessionStorage.setItem('userEmail', updatedData.newEmail || email);
 
-        // Update the local state to reflect the new data
         setFirstName(updatedData.name.split(' ')[0]);
         setLastName(updatedData.name.split(' ')[1] || '');
         setEmail(updatedData.newEmail || email);
       }
-
-      setSettingsOpen(false); // Close the settings popup
+      setSettingsOpen(false);
     } catch (error) {
       console.error('Failed to update user info:', error);
     }
   };
 
+  // Fetch streak information when the page loads
   React.useEffect(() => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
+    } else {
+      // Call API to fetch streak data
+      getStreakAndLastActivity(email)
+        .then(({ streak }) => {
+          setStreak(streak); // Set the streak from the API response
+        })
+        .catch(error => {
+          console.error('Error fetching streak information:', error);
+        });
     }
-  }, [navigate]);
+  }, [email, navigate]);
 
   return (
     <div className={darkMode ? 'app dark-mode' : 'app'}>
@@ -105,6 +110,14 @@ const UserPage = () => {
           <Typography variant="h4" align="center" gutterBottom>
             Welcome to your dashboard, {firstName}!
           </Typography>
+
+          {/* Display Streak Under the Welcome Message */}
+          <Typography variant="h6" align="center" gutterBottom>
+            {streak > 0 
+              ? `You're on a ${streak}-day streak! Keep up the good work!` 
+              : 'Start completing your goals to build a streak!'}
+          </Typography>
+
           <Typography variant="h6" align="center" gutterBottom>
             Email: {email}
           </Typography>
