@@ -6,7 +6,7 @@ const UserModel = require('./models/Users');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-
+const TimerModel = require('./models/Timers');
 app.use(express.json());
 app.use(cors());
 
@@ -479,6 +479,64 @@ app.post('/api/regenerate', async (req, res) => {
     res.status(500).json({ error: 'Failed to regenerate response' });
   }
 });
+
+app.delete('/timer/deleteTag', async (req, res) => {
+    const {email, tagName} = req.body;
+
+    try{
+        const timer = await TimerModel.findOne({email});
+        if (timer){
+            timer.tags = timer.tags.filter(tag => tag !== tagName);
+            await timer.save();
+            res.status(200).json({message: "Tag deleted successfully"});
+        }
+        else {
+            res.status(404).json({message: "User not found"});
+        }
+    }
+    catch(error){
+        res.status(500).json({message: "Error deleting tag", error: error.message});
+    }
+});
+
+app.get("/users/getTags/:email", async (req, res) => {
+    const {email} = req.params;
+    try{
+        const user = await TimerModel.findOne({ email });
+        if (!user){
+            return res.status(404).json({ message: "User not found"});
+        }
+
+        res.status(200).json({tags:user.tags});
+    }
+    catch(error){
+        console.error('Error fetching user tags:', error.message);
+        res.status(500).json({message: "Error fetching user tags", error: error.message});
+    }
+});
+
+app.post('/timer/addTag', async (req, res) => {
+    const { email, newTag } = req.body;
+
+    try {
+        const timer = await TimerModel.findOne({ email });
+        if (timer) {
+            // Check if the tag already exists
+            if (!timer.tags.includes(newTag)) {
+                timer.tags.push(newTag);  // Add the new tag
+                await timer.save();       // Save the updated document
+                res.status(200).json({ message: "Tag added successfully" });
+            } else {
+                res.status(400).json({ message: "Tag already exists" });
+            }
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error adding tag", error: error.message });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
