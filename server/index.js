@@ -179,6 +179,32 @@ app.put("/users/updateGoalStatus", async (req, res) => {
                     { new: true }
                 );
             }
+            const updatedUser = await UserModel.findOne({ email });
+
+            if (updatedUser.activeGoal.length === 0) {
+                const partnerEmail = updatedUser.pair.partner;
+
+                // No active goals left, disable pairing
+                await UserModel.findOneAndUpdate(
+                    { email },
+                    { $set: { "pair.enable": false } },
+                    { $set: { "pair.partner": "No Partner" }},
+                    { new: true }
+                );
+                // Disable pairing for partner as well if they exist
+                if (partnerEmail && partnerEmail !== "No Partner") {
+                    await UserModel.findOneAndUpdate(
+                        { email: partnerEmail },
+                        {
+                            $set: { "pair.enable": false },
+                        },
+                        {
+                            $set: { "pair.partner": "No Partner" },
+                        },
+                        { new: true }
+                    );
+                }
+            }
             res.status(200).json(user);
         } else {
             res.status(404).json({ message: "User or goal not found" });
@@ -613,3 +639,36 @@ app.put("/users/streak", async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+
+///generate flashcards using input
+app.post('/api/generateFlashcards', async (req, res) => {
+    const { prompt } = req.body;
+    const systemPrompt = `
+        You are a flashcard creator. Take in text and create exactly 10 flashcards from it.
+        Each flashcard should have a front and back, both one sentence long.
+        Return in the following JSON format:
+        {
+        "flashcards":[
+            {
+            "front": "Front of the card",
+            "back": "Back of the card"
+            }
+        ]
+        }
+        `
+    
+    try {
+      const result = await model.generateContent(systemPrompt+ prompt);
+      const response = await result.response;
+      const responseText = response.text();
+      const flashcards = JSON.parse(response.text())
+
+  
+      res.json({ flashcards });
+    } catch (error) {
+      console.error('Error generating response:', error);
+      res.status(500).json({ error: 'Failed to generate response' });
+    }
+  });
+  

@@ -349,3 +349,29 @@ export const updateStreakAndLastActivity = async (email, streak, lastActivityDat
 //         console.error('Error adding tag:', error);
 //     }
 // };
+
+//geenrating flashcards
+export const generateFlashcards = async (prompt) => {
+    try {
+      const response = await fetch(`${API_URL}/api/generateFlashcards`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+  
+      const data = await response.json();
+      const formattedResponse = formatResponseText(data.flashcards); // Apply formatting
+  
+      return formattedResponse;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  };
+  
