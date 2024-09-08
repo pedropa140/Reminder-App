@@ -559,7 +559,7 @@ app.listen(port, () => {
 
 
 ///generate flashcards using input
-app.post('/api/send-message', async (req, res) => {
+app.post('/api/flashcards', async (req, res) => {
     const { prompt } = req.body;
     const systemPrompt = `
         You are a flashcard creator. Take in text and create exactly 10 flashcards from it.
@@ -579,8 +579,10 @@ app.post('/api/send-message', async (req, res) => {
       const result = await model.generateContent(systemPrompt+ prompt);
       const response = await result.response;
       const responseText = response.text();
+      const flashcards = JSON.parse(response.text())
+
   
-      res.json({ responseText });
+      res.json({ flashcards });
     } catch (error) {
       console.error('Error generating response:', error);
       res.status(500).json({ error: 'Failed to generate response' });
