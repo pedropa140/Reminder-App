@@ -559,7 +559,11 @@ app.post('/timer/addTag', async (req, res) => {
             await timer.save();       // Save the updated document
             console.log(`Tag added: ${newTag}`);
 <<<<<<< HEAD
+<<<<<<< HEAD
             res.status(200).send({message: 'Tag added successfully'});
+=======
+            res.status(200).send({ message: 'Tag added successfully' });
+>>>>>>> 8dcb439a0a9c860ce0625056d6eab611cfe4742e
 =======
             res.status(200).send({ message: 'Tag added successfully' });
 >>>>>>> 8dcb439a0a9c860ce0625056d6eab611cfe4742e
