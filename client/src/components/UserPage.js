@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Box, Typography } from '@mui/material';
+import { Container, Box, Typography, Grid, Button, Paper } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
@@ -99,29 +99,57 @@ const UserPage = () => {
         </div>
       </nav>
 
-      <Container maxWidth="sm" sx={{ mt: 8 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            p: 4,
-            border: '1px solid',
-            borderRadius: '12px',
-            boxShadow: 3,
-            backgroundColor: '#fff',
-          }}
-        >
-          <Typography variant="h5" gutterBottom>
+      <Container maxWidth="lg" sx={{ mt: 8 }}>
+        <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
+          <Typography variant="h4" align="center" gutterBottom>
             Welcome to your dashboard, {firstName}!
           </Typography>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="h6" align="center" gutterBottom>
             Email: {email}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
+          <Typography variant="body1" align="center" sx={{ mt: 2 }}>
             Use the taskbar above to navigate to the different tools available.
           </Typography>
-        </Box>
+        </Paper>
+
+        <Grid container spacing={3}>
+          {[
+            { label: 'Tasks', description: 'Manage and track your tasks here.', path: '/user/goal' },
+            { label: 'Calendar', description: 'View and manage your calendar events.', path: '/user/calendar' },
+            { label: 'Pomodoro Timer', description: 'Focus on your tasks with the Pomodoro timer.', path: '/user/pomodoro' },
+            { label: 'Chatbot', description: 'Get help and answers from the chatbot.', path: '/user/chatbot' },
+            { label: 'Contact', description: 'Get in touch with support or feedback.', path: '/user/contact' },
+            { label: 'Settings', description: 'Update your profile and application settings.', path: '', onClick: handleSettingsClick },
+            { label: 'Logout', description: 'Log out of your account securely.', path: '', onClick: handleLogoutClick }
+          ].map((item, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Button
+                variant="contained"
+                sx={{
+                  p: 4,
+                  borderRadius: '12px',
+                  boxShadow: 3,
+                  backgroundColor: '#1976d2',
+                  color: '#fff',
+                  textAlign: 'center',
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  '&:hover': {
+                    backgroundColor: '#155a8a',
+                  },
+                }}
+                onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
+              >
+                <Typography variant="h6" color="#fff">{item.label}</Typography>
+                <Typography variant="body2" color="#fff">{item.description}</Typography>
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
       </Container>
 
       {/* Popup for logout confirmation */}
