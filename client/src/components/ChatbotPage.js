@@ -226,41 +226,51 @@ export default function ChatbotPage() {
           </div>
         </header>
         <main className={`chat-messages ${secondary}`}>
-          {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.role === "user" ? "user-message" : "bot-message"}`}>
-              <div className={`message-text ${msg.role === "user" ? "user-text" : "bot-text"}`}>
-                {msg.role === "bot" ? (
-                  <div dangerouslySetInnerHTML={{ __html: msg.text }} />
-                ) : (
-                  msg.text
-                )}
-              </div>
-              {msg.role === "bot" && !msg.feedbackGiven && (
-                <div className="feedback-buttons">
-                  <IconButton
-                    color={msg.thumbsUp ? "primary" : "default"}
-                    onClick={() => handleButtonClick(index, 'thumbUp')}
-                  >
-                    {msg.thumbsUp ? <ThumbUp /> : <ThumbUpOutlined />}
-                  </IconButton>
-                  <IconButton
-                    color={msg.thumbsDown ? "primary" : "default"}
-                    onClick={() => handleButtonClick(index, 'thumbDown')}
-                  >
-                    {msg.thumbsDown ? <ThumbDown /> : <ThumbDownOutlined />}
-                  </IconButton>
-                  <IconButton
-                    color="secondary"
-                    onClick={() => handleRefreshClick(index)}
-                  >
-                    <Refresh />
-                  </IconButton>
-                </div>
-              )}
-            </div>
-          ))}
-          {error && <div className="error-message">{error}</div>}
-        </main>
+  {messages.map((msg, index) => (
+    <div key={index} className={`message ${msg.role === "user" ? "user-message" : "bot-message"}`}>
+      <div className={`message-text ${msg.role === "user" ? "user-text" : "bot-text"}`}>
+        {msg.role === "bot" ? (
+          <div dangerouslySetInnerHTML={{ __html: msg.text }} />
+        ) : (
+          msg.text
+        )}
+      </div>
+      {/* Timestamp for each message */}
+      <div className="message-timestamp">
+        {new Date(msg.timestamp).toLocaleString([], {
+          weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        })}
+      </div>
+      {msg.role === "bot" && !msg.feedbackGiven && (
+        <div className="feedback-buttons">
+          <IconButton
+            color={msg.thumbsUp ? "primary" : "default"}
+            onClick={() => handleButtonClick(index, 'thumbUp')}
+          >
+            {msg.thumbsUp ? <ThumbUp /> : <ThumbUpOutlined />}
+          </IconButton>
+          <IconButton
+            color={msg.thumbsDown ? "primary" : "default"}
+            onClick={() => handleButtonClick(index, 'thumbDown')}
+          >
+            {msg.thumbsDown ? <ThumbDown /> : <ThumbDownOutlined />}
+          </IconButton>
+          <IconButton
+            color="secondary"
+            onClick={() => handleRefreshClick(index)}
+          >
+            <Refresh />
+          </IconButton>
+        </div>
+      )}
+    </div>
+  ))}
+  {error && <div className="error-message">{error}</div>}
+</main>
+
+
+
         <footer className="chat-input">
           <textarea
             value={userInput}
