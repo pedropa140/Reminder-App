@@ -565,19 +565,24 @@ app.post('/timer/addTag', async (req, res) => {
     try {
         const timer = await TimerModel.findOne({ email });
         if (timer) {
-            // Check if the tag already exists
-            if (!timer.tags.includes(newTag)) {
-                timer.tags.push(newTag);  // Add the new tag
-                await timer.save();       // Save the updated document
-                res.status(200).json({ message: "Tag added successfully" });
-            } else {
-                res.status(400).json({ message: "Tag already exists" });
-            }
+            timer.tags.push(newTag);
+            await userTimer.save();
+            console.log(`Tag added: ${newTag}`);
+            res.status(200).send({message: 'Tag added successfully'});
+            // // Check if the tag already exists
+            // if (!timer.tags.includes(newTag)) {
+            //     timer.tags.push(newTag);  // Add the new tag
+            //     await timer.save();       // Save the updated document
+            //     res.status(200).json({ message: "Tag added successfully" });
+            // } else {
+            //     res.status(400).json({ message: "Tag already exists" });
+            // }
         } else {
-            res.status(404).json({ message: "User not found" });
+            res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: "Error adding tag", error: error.message });
+        console.error('Error adding tag:', error);
+        res.status(500).send({ message: 'Error adding tag, server error'});
     }
 });
 
