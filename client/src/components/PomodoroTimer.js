@@ -6,7 +6,7 @@ import logo from '../icon.png';
 import '../App.css';
 import TimerAlertPopup from './TimerAlertPopup';
 import LogoutPopup from './LogoutPopup'; // Import LogoutPopup
-import { deleteTag, getAllTags, handleAddTag } from '../api';
+import { deleteTag, getAllTags, addTag } from '../api';
 import axios from 'axios';
 
 
@@ -50,7 +50,7 @@ const PomodoroTimer = () => {
         fetchTags();
     }, [email]);
 
-    const addTags = async() => {
+    const addTag = async() => {
         if (newTag.trim()) {
             try {
                 const updatedTags = [...tags, newTag.trim()];
@@ -283,9 +283,12 @@ const PomodoroTimer = () => {
                                 onChange={(e) => setNewTag(e.target.value)}
                                 fullWidth
                             />
-                            <Button onClick={handleAddTag} variant="contained" sx={{ ml: 2 }}>
+                            <Button onClick={() => addTag(email, newTag)} variant="contained" sx={{ ml: 2 }}>
                                 Add Tag
                             </Button>
+                            {/* <Button onClick={() => deleteTag(tag)} variant="outlined" color="error">
+    Delete
+</Button> */}
                     </Box>
                     </Box>
                 </Box>
