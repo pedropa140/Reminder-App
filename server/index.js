@@ -585,7 +585,7 @@ app.listen(port, () => {
 
 
 ///generate flashcards using input
-app.post('/api/flashcards', async (req, res) => {
+app.post('/api/generateFlashcards', async (req, res) => {
     const { prompt } = req.body;
     const systemPrompt = `
         You are a flashcard creator. Take in text and create exactly 10 flashcards from it.
