@@ -361,7 +361,7 @@ const PomodoroTimer = () => {
             {tags.map(tag => (
                 <span key={tag} className="tag">
                     {tag}
-                    <button className="delete-btn" onClick={() => deleteTag(email, tag)}>x</button>
+                    <button className="delete-btn" onClick={() => deleteTags(tag)}>x</button>
                     
                 </span>
             ))}
