@@ -19,7 +19,7 @@ const AboutPage = () => {
   const creators = [
     { name: 'Kusum Gandham', role: 'Lead Developer', description: 'Kusum is a skilled developer with a passion for creating efficient and scalable code.', photo: kusumPhoto },
     { name: 'Pedro Pajarillo', role: 'UI/UX Designer', description: 'Pedro is an expert in designing intuitive and visually appealing user interfaces.', photo: pedroPhoto },
-    { name: 'YeJu Lee', role: 'Backend Engineer', description: 'YeJu specializes in backend development, ensuring robust and secure server-side logic.', photo: yejuPhoto },
+    { name: 'YeJu Lee', role: 'Backend Engineer', description: 'YeJu is a learning software engineer with growing skills in connecting the frontend with the backend.', photo: yejuPhoto },
     { name: 'Elizabeth Laub', role: 'Project Manager', description: 'Elizabeth excels in managing projects and coordinating team efforts to achieve project goals.', photo: elizabethPhoto },
   ];
 
@@ -73,7 +73,8 @@ const AboutPage = () => {
             Who We Are
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-            We're a team of passionate individuals committed to making productivity tools that enhance your daily life. Our team combines expertise in technology, design, and user experience to bring you a reliable and intuitive platform.
+            {/* We're a team of passionate individuals committed to making productivity tools that enhance your daily life. Our team combines expertise in technology, design, and user experience to bring you a reliable and intuitive platform. */}
+            We are a mix of recent and upcoming graduates from Rutgers University-New Brunswick who are inspired to make productivity tools to enhance daily life. Aimed at creating meaningful projects, our team has crafted this platform to promote better time management and organization.
           </Typography>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
             What We Do
@@ -105,7 +106,7 @@ const AboutPage = () => {
               backgroundColor: darkMode ? '#333' : '#fff',
               transition: 'background-color 0.3s, color 0.3s',
             }}>
-              <strong>Task Management:</strong> Create, edit, and organize tasks with ease.
+              <strong>Task Management:</strong> Create, edit, and organize current and upcoming tasks.
             </li>
             <li style={{
               marginBottom: '10px',
@@ -145,10 +146,11 @@ const AboutPage = () => {
             Our Vision
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-            We believe in empowering users to take control of their time and achieve their goals efficiently. Our vision is to continuously innovate and improve our platform to meet the evolving needs of our users. We are dedicated to providing tools that are not only effective but also enjoyable to use.
+            {/* We believe in empowering users to take control of their time and achieve their goals efficiently. Our vision is to continuously innovate and improve our platform to meet the evolving needs of our users. We are dedicated to providing tools that are not only effective but also enjoyable to use. */}
+            We believe in empowering users to stay organized, focused, and achieve their goals, whether they be personal or academic. Our vision is to give users the most personalized experience by receiving feedback of their evolving needs. 
           </Typography>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-            Join Us
+            Send Feedback
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
             Thank you for choosing ReminderApp! We’re excited to be a part of your journey towards better organization and productivity. If you have any feedback or suggestions, please feel free to reach out to us. Your input helps us improve and deliver the best experience possible.
