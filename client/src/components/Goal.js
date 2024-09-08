@@ -244,6 +244,7 @@ const GoalPage = () => {
         <ul className="nav-links">
           <li><Link to="/user">HOME</Link></li>
           <li><Link to="/user/goal">TASKS</Link></li>
+          <li><Link to="/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
           <li><Link to="/user/chatbot">CHATBOT</Link></li>
@@ -253,8 +254,10 @@ const GoalPage = () => {
             <FaCog />
           </div>
         </ul>
-        <div className="mode-icon" onClick={toggleDarkMode}>
-          {darkMode ? <FaSun /> : <FaMoon />}
+        <div className="nav-actions">
+          <div className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </div>
         </div>
       </nav>
       <Container>

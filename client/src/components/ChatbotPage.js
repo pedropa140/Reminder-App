@@ -244,6 +244,7 @@ export default function ChatbotPage() {
         <ul className="nav-links">
           <li><Link to="/user">HOME</Link></li>
           <li><Link to="/user/goal">TASKS</Link></li>
+          <li><Link to="/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
           <li><Link to="/user/chatbot">CHATBOT</Link></li>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Box, Typography, Button, TextField } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import logo from '../icon.png';
 import '../App.css';
 import TimerAlertPopup from './TimerAlertPopup';
-import LogoutPopup from './LogoutPopup'; // Import LogoutPopup
-import { deleteTag, getAllTags, addTag } from '../api';
+import LogoutPopup from './LogoutPopup';
+import SettingsPopup from './SettingsPopup';
+import { deleteTag, getAllTags, addTag, updateUserInfo } from '../api';
 import axios from 'axios';
 
 
@@ -20,37 +21,79 @@ const PomodoroTimer = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const alarmSound = useRef(null);
-    const navigate = useNavigate(); // Hook for navigation
-    const email = sessionStorage.getItem('userEmail'); //user email to tie the tags to 
+    const navigate = useNavigate();
+    const [darkMode, setDarkMode] = React.useState(false);
+    const [popupOpen, setPopupOpen] = React.useState(false);
+    const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
     const [tags, setTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
-    const [newTag,setNewTag] = useState('');
+    const [newTag, setNewTag] = useState('');
     const API_URL = 'http://localhost:5000';
-    const [darkMode, setDarkMode] = useState(false);
-
-
-
-
+    const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
+    const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
+    const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
 
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
 
+    const handleClosePopup = () => {
+        setPopupOpen(false);
+    };
+
+    const handleSettingsClick = () => {
+        setSettingsOpen(true); // Open the settings popup
+    };
+
+    const handleCloseSettings = () => {
+        setSettingsOpen(false); // Close the settings popup
+    };
+
+    // Function to handle user info update from SettingsPopup
+    const handleUpdateUserInfo = async (updatedData) => {
+        try {
+            // Make API call to update user information
+            const response = await updateUserInfo(updatedData);
+
+            // Update the sessionStorage with the new data
+            if (response.user) {
+                sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
+                sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
+                sessionStorage.setItem('userEmail', updatedData.newEmail || email);
+
+                // Update the local state to reflect the new data
+                setFirstName(updatedData.name.split(' ')[0]);
+                setLastName(updatedData.name.split(' ')[1] || '');
+                setEmail(updatedData.newEmail || email);
+            }
+
+            setSettingsOpen(false); // Close the settings popup
+        } catch (error) {
+            console.error('Failed to update user info:', error);
+        }
+    };
+
+    React.useEffect(() => {
+        if (!sessionStorage.getItem('userEmail')) {
+            navigate('/logged-out', { replace: true });
+        }
+    }, [navigate]);
+
     useEffect(() => {
-        const fetchTags = async() => {
+        const fetchTags = async () => {
             try {
                 const response = await getAllTags(email); // grab user's tags
                 setTags(response.data.tags);//set tags
             }
             catch (error) {
-                console.error ("Error fetching tags:", error);
+                console.error("Error fetching tags:", error);
             }
         };
         fetchTags();
     }, [email]);
 
-    const addTag = async() => {
+    const addTag = async () => {
         if (newTag.trim()) {
             try {
                 const updatedTags = [...tags, newTag.trim()];
@@ -60,19 +103,19 @@ const PomodoroTimer = () => {
                 await axios.post(`${API_URL}/timer/addTag`, { email, newTag: newTag.trim() });
 
             }
-            catch(error) {
+            catch (error) {
                 console.error("Error adding tag:", error)
             }
         }
     };
 
     const deleteTags = async (tagName) => {
-        try{
-            await deleteTag(email, tagName); 
+        try {
+            await deleteTag(email, tagName);
             setTags(tags.filter((tag) => tag !== tagName));
 
         }
-        catch (error){
+        catch (error) {
             console.error("Error deleting tag:", error);
         }
     };
@@ -179,13 +222,20 @@ const PomodoroTimer = () => {
                 <ul className="nav-links">
                     <li><Link to="/user">HOME</Link></li>
                     <li><Link to="/user/goal">TASKS</Link></li>
+                    <li><Link to="/pair">PAIR</Link></li>
                     <li><Link to="/user/calendar">CALENDAR</Link></li>
                     <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
+                    <li><Link to="/user/chatbot">CHATBOT</Link></li>
                     <li><Link to="/user/contact">CONTACT</Link></li>
                     <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
+                    <div className="settings-icon" onClick={handleSettingsClick}>
+                        <FaCog />
+                    </div>
                 </ul>
-                <div className="theme-toggle" onClick={toggleDarkMode}>
-                    {darkMode ? <FaSun /> : <FaMoon />}
+                <div className="nav-actions">
+                    <div className="theme-toggle" onClick={toggleDarkMode}>
+                        {darkMode ? <FaSun /> : <FaMoon />}
+                    </div>
                 </div>
             </nav>
             <Container maxWidth="sm" sx={{ mt: 8 }}>
@@ -246,7 +296,7 @@ const PomodoroTimer = () => {
                     >
                         Reset
                     </Button>
-                    
+
                     <TimerAlertPopup
                         open={openAlert}
                         onClose={handleCancelAlert}
@@ -254,10 +304,21 @@ const PomodoroTimer = () => {
                         onConfirm={handleCloseAlert}
                     />
 
+                    {/* Popup for logout confirmation */}
                     <LogoutPopup
-                        open={logoutPopupOpen}
-                        onClose={handleCloseLogoutPopup}
+                        open={popupOpen}
+                        onClose={handleClosePopup}
                         onConfirm={handleConfirmLogout}
+                    />
+
+                    {/* Popup for settings with user info */}
+                    <SettingsPopup
+                        open={settingsOpen}
+                        onClose={handleCloseSettings}
+                        firstName={firstName}
+                        lastName={lastName}
+                        email={email}
+                        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
                     />
                     <Box sx={{ mt: 4, width: '100%' }}>
                         <Typography variant="h6">Tags:</Typography>
@@ -269,15 +330,15 @@ const PomodoroTimer = () => {
                                 >
                                     <Typography variant="body1">{tag}</Typography>
                                     <Button onClick={() => deleteTag(tag)}>
-                                    
+
                                     </Button>
                                 </Box>
                             ))
                         ) : (
                             <Typography variant="body2">No tags available.</Typography>
                         )}
-                    <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                    <TextField
+                        <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                            <TextField
                                 label="New Tag"
                                 value={newTag}
                                 onChange={(e) => setNewTag(e.target.value)}
@@ -289,7 +350,7 @@ const PomodoroTimer = () => {
                             {/* <Button onClick={() => deleteTag(tag)} variant="outlined" color="error">
     Delete
 </Button> */}
-                    </Box>
+                        </Box>
                     </Box>
                 </Box>
             </Container>
