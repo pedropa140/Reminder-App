@@ -26,13 +26,13 @@ const PomodoroTimer = () => {
     const [popupOpen, setPopupOpen] = React.useState(false);
     const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
     const [tags, setTags] = useState([]);
-    const [selectedTags, setSelectedTags] = useState([]);
+    //const [selectedTags, setSelectedTags] = useState([]);
     const [newTag, setNewTag] = useState('');
     const API_URL = 'http://localhost:5000';
     const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
     const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
     const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
-
+    //const email = sessionStorage.getItem('userEmail');
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -80,17 +80,28 @@ const PomodoroTimer = () => {
         }
     }, [navigate]);
 
+
     useEffect(() => {
+        if(!email){
+            navigate('/logged-out', {replace: true});
+            return;
+        }
+       
         const fetchTags = async () => {
             try {
-                const response = await getAllTags(email); // grab user's tags
+                const response = await axios.get(`${API_URL}/timers/getTags/${email}`);
+                //const response = await getAllTags(email);
+                //const response = await axios.get(`${API_URL}/timers/getTags`, { params: { email } }); // grab user's tags
+                console.log(response.data.tags);
                 setTags(response.data.tags);//set tags
             }
             catch (error) {
                 console.error("Error fetching tags:", error);
             }
+        
         };
         fetchTags();
+    
     }, [email]);
 
     const addTag = async () => {
@@ -111,9 +122,18 @@ const PomodoroTimer = () => {
 
     const deleteTags = async (tagName) => {
         try {
-            await deleteTag(email, tagName);
-            setTags(tags.filter((tag) => tag !== tagName));
-
+            //await deleteTag(email, tagName);
+            
+            //setTags(tags.filter((tag) => tag !== tagName));
+            // setTags(prevTags => prevTags.filter(t => t !== tagName));
+            // setTags(updatedTags)l\;
+            console.log('Tags before deletion:', tags); // Log state before deletion
+            await deleteTag(email, tagName); // Delete the tag
+            setTags(prevTags => prevTags.filter(t => t !== tagName));
+            //const updatedTags = tags.filter(t => t !== tagName); // Remove the tag from the state
+            //console.log('Tags after deletion:', updatedTags); // Log updated state
+            //setTags(updatedTags); // Update state
+            window.location.reload();
         }
         catch (error) {
             console.error("Error deleting tag:", error);
@@ -322,7 +342,7 @@ const PomodoroTimer = () => {
                     />
                     <Box sx={{ mt: 4, width: '100%' }}>
                         <Typography variant="h6">Tags:</Typography>
-                        {tags.length > 0 ? (
+                        {/* {tags.length > 0 ? (
                             tags.map((tag, index) => (
                                 <Box
                                     key={index}
@@ -336,7 +356,16 @@ const PomodoroTimer = () => {
                             ))
                         ) : (
                             <Typography variant="body2">No tags available.</Typography>
-                        )}
+                        )} */}
+                         <div className="tag-container">
+            {tags.map(tag => (
+                <span key={tag} className="tag">
+                    {tag}
+                    <button className="delete-btn" onClick={() => deleteTag(email, tag)}>x</button>
+                    
+                </span>
+            ))}
+        </div>
                         <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
                             <TextField
                                 label="New Tag"
