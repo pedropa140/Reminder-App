@@ -634,6 +634,32 @@ app.post('/timer/addTag', async (req, res) => {
 // });
 
 // Endpoint to retrieve streak and lastActivityDate by email
+app.post('/timers/logSession', async(req,res) => {
+    const {email, duration, tagName, pomQuality} = req.body;
+    try{
+        const timer = await TimerModel.findOne({email});
+
+        if (timer){
+            const newSession = {
+                date: new Date(), //store the date
+                duration: duration, //pom duration
+                tagName: tagName,
+                pomQuality: pomQuality
+            };
+            timer.pomodoroSessions.push(newSession);
+            await timer.save();
+            res.status(200).json({message: 'Pomodoro session logged successfully'});
+
+        }
+        else{
+            res.status(404).json({message: 'User not found'});
+        }
+    }
+    catch (error){
+        console.error('Error logging session:', error);
+        res.status(500).json({message: 'Error logging Pomodoro session'});
+    }
+});
 app.get("/users/streak", async (req, res) => {
     try {
         const email = req.query.email; // Get the email from the query parameter

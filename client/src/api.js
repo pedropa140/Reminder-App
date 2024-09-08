@@ -312,6 +312,21 @@ export const addTag = async (email, newTag) => {
     }
 };
 
+export const logPomodoroSession = async(email,duration,selectedTag, pomQuality) => {
+    try{
+        const response = await axios.post(`${API_URL}/timers/logSession`, {
+            email:email,
+            duration: duration,
+            tagName: selectedTag,
+            pomQuality: pomQuality
+        });
+        console.log('Pomodoro session logged:', response.data);
+    }
+    catch (error){
+        console.error('Error logging Pomodoro session:', error);
+    }
+};
+
 export const getStreakAndLastActivity = async (email) => {
     try {
         const response = await axios.get(`${API_URL}/users/streak`, {
