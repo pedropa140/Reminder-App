@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+import { PDFViewer } from '@react-pdf/renderer';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import AboutPage from './components/AboutPage';
@@ -14,7 +16,7 @@ import GoalPage from './components/Goal';
 import PairPage from './components/Pair';
 import CalendarPage from './components/Calendar';
 import ChatbotPage from './components/ChatbotPage';
-
+import PDFSummarizer from './components/PDFSummarizer';
 function App() {
   return (
     <Router>
@@ -87,10 +89,20 @@ function App() {
           }
         />
 
+        <Route
+          path="/user/pdfsummarizer"
+          element={
+            <ProtectedRoute>
+              <PDFSummarizer />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
 }
 
+// ReactDOM.render(<App />, document.getElementById('root'));
 export default App;

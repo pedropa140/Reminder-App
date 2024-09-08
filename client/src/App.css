@@ -264,6 +264,7 @@
   color: #888;
 }
 
+/* Logout Popup Styles */
 .logout-popup {
   position: fixed;
   top: 50%;
@@ -295,6 +296,113 @@
   padding: 0.5rem 1rem;
 }
 
-.settings-icon {
+/* Settings Popup Styles */
+.settings-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  z-index: 1000;
+  max-width: 500px;
+  text-align: center;
+}
+
+.settings-popup h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.settings-popup .form-group {
+  margin-bottom: 1rem;
+}
+
+.settings-popup label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.settings-popup input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.settings-popup .popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.settings-popup .popup-button {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Pair Page Styles */
+.pair-page-container {
+  padding: 2rem;
+}
+
+.pair-page-container .user-info,
+.pair-page-container .partner-info {
+  margin-bottom: 2rem;
+}
+
+.pair-page-container .user-info,
+.pair-page-container .partner-info,
+.pair-page-container .goal-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.pair-page-container .goal-card {
+  margin-bottom: 1rem;
+}
+
+.pair-page-container .goal-card h6 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: #333;
+}
+
+.pair-page-container .goal-card p {
+  font-size: 1rem;
+  color: #555;
+}
+
+.pair-page-container .no-partner-message,
+.pair-page-container .no-goals-message {
+  color: #ff4d4d; /* Error color */
+  font-size: 1rem;
+}
+
+.pair-page-container .button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.pair-page-container .button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.dark-mode .pair-page-container .button {
+  background-color: #0056b3;
+}
+
+.dark-mode .pair-page-container .button:hover {
+  background-color: #003d7a;
 }

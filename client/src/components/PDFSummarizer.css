@@ -1,0 +1,37 @@
+.pdf-summarizer {
+  display: flex;
+  flex-direction: column;
+  height: 90vh; /* Full viewport height */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.summary-container {
+  flex: 1; /* Grow to fill the available space */
+  overflow-y: auto; /* Add vertical scrolling */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9; /* Optional background color */
+}
+
+.loading-message {
+  padding: 20px;
+}
+
+.file-input {
+  margin-bottom: 20px;
+}
+
+.navbar {
+  /* Your existing navbar styles */
+}
+
+.nav-actions {
+  /* Your existing nav-actions styles */
+}
+
+/* Optional: to ensure the content inside .summary-content is properly formatted */
+.summary-content {
+  word-break: break-word;
+}
