@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Box, Typography, Button, TextField, IconButton, Checkbox, FormControlLabel } from '@mui/material';
+import { Container, Box, Typography, Button, TextField, IconButton, Checkbox, FormControlLabel, Paper, Collapse } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../icon.png';
 import '../App.css';
-import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
+import { FaSun, FaMoon, FaCog, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
 import { setGoal, getGoals, updateTaskStatus, updateGoalStatus, getCompletedGoals, deleteGoal, deleteTask, updateUserInfo, getStreakAndLastActivity, updateStreakAndLastActivity } from '../api';
@@ -13,10 +14,13 @@ const GoalPage = () => {
   const [tasks, setTasks] = useState(['']);
   const [fetchedGoals, setFetchedGoals] = useState([]);
   const [completedGoals, setCompletedGoals] = useState([]);
-  const [streak, setStreak] = useState(0); // State for streak
+  const [streak, setStreak] = useState(0);
   const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
   const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
   const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
+
+  const [activeGoalsOpen, setActiveGoalsOpen] = useState(true);
+  const [completedGoalsOpen, setCompletedGoalsOpen] = useState(true);
 
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = React.useState(false);
@@ -55,10 +59,9 @@ const GoalPage = () => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
     } else {
-      // Fetch streak information when page loads
       getStreakAndLastActivity(email)
         .then(({ streak }) => {
-          setStreak(streak); // Set the streak in state
+          setStreak(streak);
         })
         .catch(error => {
           console.error('Error fetching streak information:', error);
@@ -105,8 +108,8 @@ const GoalPage = () => {
           updateGoalStatus(email, goalTitle, true)
             .then(() => {
               console.log('Goal status updated successfully');
-              handleStreakUpdate(); // Call streak update after goal completion
-              fetchGoalsAndCompletedGoals(); // Refetch goals and completed goals
+              handleStreakUpdate();
+              fetchGoalsAndCompletedGoals();
             })
             .catch(error => {
               console.error('Error updating goal status:', error);
@@ -133,10 +136,7 @@ const GoalPage = () => {
         updatedStreak = 1;
       }
 
-      // Update the backend
       await updateStreakAndLastActivity(email, updatedStreak, currentDate);
-
-      // Update the local state
       setStreak(updatedStreak);
 
       console.log(`Streak updated to: ${updatedStreak}`);
@@ -150,7 +150,7 @@ const GoalPage = () => {
       .then(() => {
         console.log(`Goal "${goalTitle}" deleted successfully.`);
         const updatedGoals = [...fetchedGoals];
-        updatedGoals.splice(goalIndex, 1); // Remove the deleted goal from the array
+        updatedGoals.splice(goalIndex, 1);
         setFetchedGoals(updatedGoals);
       })
       .catch(error => {
@@ -164,7 +164,7 @@ const GoalPage = () => {
       .then(() => {
         console.log(`Task "${taskName}" deleted successfully.`);
         const updatedGoals = [...fetchedGoals];
-        updatedGoals[goalIndex].activeTasks.splice(taskIndex, 1); // Remove the deleted task from the array
+        updatedGoals[goalIndex].activeTasks.splice(taskIndex, 1);
         setFetchedGoals(updatedGoals);
       })
       .catch(error => {
@@ -246,8 +246,6 @@ const GoalPage = () => {
           <li><Link to="/user/goal">TASKS</Link></li>
           <li><Link to="/user/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
-          <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
-          <li><Link to="/user/chatbot">CHATBOT</Link></li>          
           <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
           <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
@@ -262,22 +260,21 @@ const GoalPage = () => {
         </div>
       </nav>
       <Container>
-        {/* Streak Section */}
-        <Box mt={4}>
-          <Typography variant="h4">Your Current Streak</Typography>
-          <Typography variant="h6">
+        <Box mt={4} p={2} component={Paper} elevation={3}>
+          <Typography variant="h4" align="center" gutterBottom>Your Current Streak</Typography>
+          <Typography variant="h6" align="center">
             {streak} day{streak === 1 ? '' : 's'} in a row!
           </Typography>
         </Box>
 
-        {/* Goal Submission Form */}
-        <Box mt={4}>
-          <Typography variant="h4">Set Your Goal</Typography>
+        <Box mt={4} p={2} component={Paper} elevation={3}>
+          <Typography variant="h4" gutterBottom>Set Your Goal</Typography>
           <TextField
             label="Goal Title"
             value={goal}
             onChange={(e) => setGoalTitle(e.target.value)}
             fullWidth
+            margin="normal"
           />
           <Box mt={2}>
             {tasks.map((task, index) => (
@@ -287,68 +284,77 @@ const GoalPage = () => {
                   value={task}
                   onChange={(e) => handleChangeTask(index, e.target.value)}
                   fullWidth
+                  margin="normal"
                 />
-                <IconButton onClick={handleAddTask}>+</IconButton>
+                <IconButton onClick={handleAddTask} color="primary">+</IconButton>
               </Box>
             ))}
           </Box>
-          <Button variant="contained" onClick={handleSubmitGoal}>Submit Goal</Button>
+          <Button variant="contained" color="primary" onClick={handleSubmitGoal} fullWidth>
+            Submit Goal
+          </Button>
         </Box>
 
-        {/* Active Goals */}
-        {fetchedGoals.length > -1 ? (
-          <Box mt={4}>
-            <Typography variant="h5">Your Goals</Typography>
-            {fetchedGoals.map((goal, goalIndex) => (
-              <Box key={goalIndex} mb={2}>
-                <Typography variant="h6">
-                  {goal.title}
-                  <Button color="error" onClick={() => handleDeleteGoal(goal.title, goalIndex)} style={{ marginLeft: '1rem' }}>
-                    Delete Goal
-                  </Button>
-                </Typography>
-                <ul style={{ listStyleType: 'none', padding: 0 }}>
-                  {goal.activeTasks && Array.isArray(goal.activeTasks) ? (
-                    goal.activeTasks.map((task, taskIndex) => (
-                      <li key={taskIndex}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={task.completed}
-                              onChange={() => handleTaskCompletionChange(goalIndex, taskIndex)}
-                            />
-                          }
-                          label={task.name}
-                        />
-                        <Button color="error" onClick={() => handleDeleteTask(goalIndex, taskIndex, task.name)}>
-                          Delete Task
-                        </Button>
-                      </li>
-                    ))
-                  ) : (
-                    <Typography variant="body2">No tasks available</Typography>
-                  )}
-                </ul>
-              </Box>
-            ))}
-          </Box>
-        ) : (
-          <Typography variant="body1">No active goals available</Typography>
-        )}
+        <Box mt={4}>
+          <Typography variant="h5" gutterBottom onClick={() => setActiveGoalsOpen(!activeGoalsOpen)} style={{ cursor: 'pointer' }}>
+            {activeGoalsOpen ? <FaChevronUp /> : <FaChevronDown />} Your Goals
+          </Typography>
+          <Collapse in={activeGoalsOpen}>
+            {fetchedGoals.length > 0 ? (
+              fetchedGoals.map((goal, goalIndex) => (
+                <Box key={goalIndex} mb={2} p={2} component={Paper} elevation={2}>
+                  <Typography variant="h6" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {goal.title}
+                    <IconButton color="error" onClick={() => handleDeleteGoal(goal.title, goalIndex)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Typography>
+                  <ul style={{ listStyleType: 'none', padding: 0 }}>
+                    {goal.activeTasks && Array.isArray(goal.activeTasks) ? (
+                      goal.activeTasks.map((task, taskIndex) => (
+                        <li key={taskIndex} style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={task.completed}
+                                onChange={() => handleTaskCompletionChange(goalIndex, taskIndex)}
+                              />
+                            }
+                            label={task.name}
+                          />
+                          <IconButton color="error" onClick={() => handleDeleteTask(goalIndex, taskIndex, task.name)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </li>
+                      ))
+                    ) : (
+                      <Typography variant="body2">No tasks available</Typography>
+                    )}
+                  </ul>
+                </Box>
+              ))
+            ) : (
+              <Typography variant="body1">No active goals available</Typography>
+            )}
+          </Collapse>
+        </Box>
 
-        {/* Completed Goals */}
-        {completedGoals.length > -1 ? (
-          <Box mt={4}>
-            <Typography variant="h5">Completed Goals</Typography>
-            {completedGoals.map((goal, index) => (
-              <Box key={index} mb={2}>
-                <Typography variant="h6">{goal.title}</Typography>
-              </Box>
-            ))}
-          </Box>
-        ) : (
-          <Typography variant="body1">No completed goals available</Typography>
-        )}
+        <Box mt={4}>
+          <Typography variant="h5" gutterBottom onClick={() => setCompletedGoalsOpen(!completedGoalsOpen)} style={{ cursor: 'pointer' }}>
+            {completedGoalsOpen ? <FaChevronUp /> : <FaChevronDown />} Completed Goals
+          </Typography>
+          <Collapse in={completedGoalsOpen}>
+            {completedGoals.length > 0 ? (
+              completedGoals.map((goal, index) => (
+                <Box key={index} mb={2} p={2} component={Paper} elevation={2}>
+                  <Typography variant="h6">{goal.title}</Typography>
+                </Box>
+              ))
+            ) : (
+              <Typography variant="body1">No completed goals available</Typography>
+            )}
+          </Collapse>
+        </Box>
       </Container>
 
       <LogoutPopup
@@ -357,7 +363,6 @@ const GoalPage = () => {
         onConfirm={handleConfirmLogout}
       />
 
-      {/* Popup for settings with user info */}
       <SettingsPopup
         open={settingsOpen}
         onClose={handleCloseSettings}
