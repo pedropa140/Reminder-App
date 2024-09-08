@@ -486,38 +486,57 @@ app.post('/api/regenerate', async (req, res) => {
   }
 });
 
-app.delete('/timer/deleteTag', async (req, res) => {
+app.delete('/timers/deleteTag', async (req, res) => {
     const {email, tagName} = req.body;
 
-    try{
-        const timer = await TimerModel.findOne({email});
-        if (timer){
-            timer.tags = timer.tags.filter(tag => tag !== tagName);
-            await timer.save();
-            res.status(200).json({message: "Tag deleted successfully"});
+    // try{
+    //     const timer = await TimerModel.findOne({email});
+    //     if (timer){
+    //         timer.tags = timer.tags.filter(tag => tag !== tagName);
+    //         await timer.save();
+    //         res.status(200).json({message: "Tag deleted successfully"});
+    //     }
+    //     else {
+    //         res.status(404).json({message: "User not found"});
+    //     }
+    // }
+    // catch(error){
+    //     res.status(500).json({message: "Error deleting tag", error: error.message});
+    // }
+    try {
+        const result = await TimerModel.updateOne(
+            { email },
+            { $pull: { tags: tagName } } // Use $pull to remove the tag from the tags array
+        );
+        if (result.modifiedCount === 0) {
+            res.status(404).json({ message: 'Tag not found or user not found' });
+        } else {
+            res.status(200).json({ message: 'Tag deleted successfully' });
         }
-        else {
-            res.status(404).json({message: "User not found"});
-        }
-    }
-    catch(error){
-        res.status(500).json({message: "Error deleting tag", error: error.message});
+    } catch (error) {
+        console.error('Error deleting tag:', error);
+        res.status(500).json({ message: 'Error deleting tag' });
     }
 });
 
-app.get("/users/getTags/:email", async (req, res) => {
-    const {email} = req.params;
+app.get("/timers/getTags/:email", async (req, res) => {
+    const email = req.params.email;
+    console.log(`Fetching tags for email: ${email}`);
+    //const {email} = req.params; //query vs params
     try{
-        const user = await TimerModel.findOne({ email });
-        if (!user){
-            return res.status(404).json({ message: "User not found"});
+        const timer = await TimerModel.findOne({ email });
+        if (timer){
+            res.status(200).json({tags:timer.tags});
+        }
+        else{
+            res.status(404).json({ message: "User not found"});
         }
 
-        res.status(200).json({tags:user.tags});
+        
     }
     catch(error){
         console.error('Error fetching user tags:', error.message);
-        res.status(500).json({message: "Error fetching user tags", error: error.message});
+        res.status(500).json({message: "Error fetching user tags serverside", error: error.message});
     }
 });
 
@@ -525,20 +544,60 @@ app.post('/timer/addTag', async (req, res) => {
     const { email, newTag } = req.body;
 
     try {
-        const timer = await TimerModel.findOne({ email });
-        if (timer) {
-            timer.tags.push(newTag);
-            await userTimer.save();
+        let timer = await TimerModel.findOne({ email });
+        if (!timer) {
+            console.log('No timer found, creating a new one');
+            // If no document is found, create a new one
+            timer = new TimerModel({ email, tags: [newTag] });
+            await timer.save();
+            return res.status(200).json({ message: 'New timer created and tag added' });
+        }
+
+        // Check if the tag already exists
+        if (!timer.tags.includes(newTag)) {
+            timer.tags.push(newTag);  // Add the new tag
+            await timer.save();       // Save the updated document
             console.log(`Tag added: ${newTag}`);
+<<<<<<< HEAD
             res.status(200).send({message: 'Tag added successfully'});
+=======
+            res.status(200).send({ message: 'Tag added successfully' });
+>>>>>>> 8dcb439a0a9c860ce0625056d6eab611cfe4742e
         } else {
-            res.status(404).json({ message: 'User not found' });
+            res.status(400).send({ message: 'Tag already exists' });
         }
     } catch (error) {
         console.error('Error adding tag:', error);
-        res.status(500).send({ message: 'Error adding tag, server error'});
+        res.status(500).send({ message: 'Error adding tag, server error' });
     }
 });
+// app.post('/timer/addTag', async (req, res) => {
+//     const { email, newTag } = req.body;
+
+//     try {
+//         const timer = await TimerModel.findOne({ email });
+//         if (timer) {
+//             if (!timer.tags.includes(newTag)){
+//             timer.tags.push(newTag);
+//             await timer.save();
+//             console.log(`Tag added: ${newTag}`);
+//             res.status(200).send({message: 'Tag added successfully'});
+//             // // Check if the tag already exists
+//             // if (!timer.tags.includes(newTag)) {
+//             //     timer.tags.push(newTag);  // Add the new tag
+//             //     await timer.save();       // Save the updated document
+//             //     res.status(200).json({ message: "Tag added successfully" });
+//             } else {
+//                 res.status(400).json({ message: "Tag already exists" });
+//              }
+//         } else {
+//             res.status(404).json({ message: 'User not found' });
+//         }
+//     } catch (error) {
+//         console.error('Error adding tag:', error);
+//         res.status(500).send({ message: 'Error adding tag, server error'});
+//     }
+// });
 
 app.get("/users/streak", async (req, res) => {
     try {

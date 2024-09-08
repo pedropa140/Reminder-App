@@ -278,9 +278,11 @@ export const regenerateMessage = async (prompt) => {
 //supposedly no set tag.
 export const deleteTag = async (email, tagName) => {
     try {
-        const response = await axios.delete(`${API_URL}/timer/deleteTag`, {
+        const response = await axios.delete(`${API_URL}/timers/deleteTag`, {
             data: { email, tagName }
         });
+        console.log('Delete response:', response.data); // Log response
+        return response.data
     }
     catch (error) {
         console.error('Error in deleting tag:', error);
@@ -289,9 +291,10 @@ export const deleteTag = async (email, tagName) => {
 };
 
 export const getAllTags = async (email) => {
+    console.log(`Fetching tags for email: ${email}`);
     try {
-        const response = await axios.get(`${API_URL}/users/getTags/${email}`);
-        return response;
+        const response = await axios.get(`${API_URL}/timers/getTags/${email}`);
+        return response.data.tags; //just the tags
     }
     catch (error) {
         console.error("Error in retrieving tags:", error);
@@ -301,7 +304,7 @@ export const getAllTags = async (email) => {
 
 export const addTag = async (email, newTag) => {
     try {
-        const response = await axios.post(`${API_URL}/timer/addTag`, { email, newTag: newTag.trim() });
+        const response = await axios.post(`${API_URL}/timers/addTag`, { email, newTag: newTag.trim() });
         return response.data;
     } catch (error) {
         console.error('Error in adding tag:', error);
