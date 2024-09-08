@@ -11,6 +11,7 @@ const nodemailer = require('nodemailer');
 app.use(express.json());
 app.use(cors());
 
+// Backend Port + MongoDB connection
 const port = process.env.PORT || 5000;
 const mongodb_url = process.env.MONGODB_URL;
 
@@ -18,6 +19,7 @@ mongoose.connect(mongodb_url, { useNewUrlParser: true, useUnifiedTopology: true 
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+// Gives us a list of all users
 app.get("/users/getUsers", async (req, res) => {
     try {
         console.log('Fetching all users...');
@@ -30,6 +32,7 @@ app.get("/users/getUsers", async (req, res) => {
     }
 });
 
+// Creates a new user
 app.post("/users/createUser", async (req, res) => {
     try {
         console.log('Creating new user with data:', req.body);
@@ -45,6 +48,8 @@ app.post("/users/createUser", async (req, res) => {
     }
 });
 
+
+// Get user based on email
 app.get("/users/getUser/:email", async (req, res) => {
     try {
         const { email } = req.params;
@@ -64,6 +69,7 @@ app.get("/users/getUser/:email", async (req, res) => {
     }
 });
 
+// Get all goals for a user
 app.get("/users/getGoals/:email", async (req, res) => {
     try {
         const { email } = req.params;
@@ -84,6 +90,7 @@ app.get("/users/getGoals/:email", async (req, res) => {
     }
 });
 
+// Set a goal
 app.put("/users/setGoal", async (req, res) => {
     try {
         const { email, goal, tasks } = req.body;
@@ -117,6 +124,7 @@ app.put("/users/setGoal", async (req, res) => {
     }
 });
 
+// Update task status
 app.put("/users/updateTaskStatus", async (req, res) => {
     try {
         const { email, goalTitle, taskName, completed } = req.body;
@@ -148,6 +156,7 @@ app.put("/users/updateTaskStatus", async (req, res) => {
     }
 });
 
+// Update goal status and move completed goals
 app.put("/users/updateGoalStatus", async (req, res) => {
     try {
         const { email, goalTitle, completed } = req.body;
@@ -161,6 +170,7 @@ app.put("/users/updateGoalStatus", async (req, res) => {
 
         if (user) {
             if (completed) {
+                // Move completed goal to completedGoals
                 await UserModel.findOneAndUpdate(
                     { email },
                     {
@@ -175,6 +185,7 @@ app.put("/users/updateGoalStatus", async (req, res) => {
             if (updatedUser.activeGoal.length === 0) {
                 const partnerEmail = updatedUser.pair.partner;
 
+                // No active goals left, disable pairing
                 await UserModel.findOneAndUpdate(
                     { email },
                     { $set: { "pair.enable": false } },
@@ -204,6 +215,7 @@ app.put("/users/updateGoalStatus", async (req, res) => {
     }
 });
 
+// Get all completed goals for a user
 app.get("/users/getCompletedGoals/:email", async (req, res) => {
     try {
         const { email } = req.params;
@@ -224,19 +236,25 @@ app.get("/users/getCompletedGoals/:email", async (req, res) => {
     }
 });
 
+// Get the pair JSON
 app.get("/users/getPair/:email", async (req, res) => {
     try {
         const { email } = req.params;
         console.log('Fetching pair for user with email:', email);
+        
+        // Find the user based on the email
         const user = await UserModel.findOne({ email });
+
+        // Check if the user has a partner
         if (user && user.pair.partner !== "No Partner") {
             const partnerEmail = user.pair.partner;
             
+            // Find the partner's information
             const partner = await UserModel.findOne({ email: partnerEmail });
 
             if (partner) {
                 console.log('Partner found:', partner);
-                res.status(200).json({ partner: partner });
+                res.status(200).json({ partner: partner }); // Return partner's data
             } else {
                 res.status(404).json({ message: "Partner not found" });
             }
@@ -249,18 +267,21 @@ app.get("/users/getPair/:email", async (req, res) => {
     }
 });
 
+// Pair users
 app.put("/users/setPair", async (req, res) => {
     try {
         const { email } = req.body;
 
+        // Find the user who wants to pair and doesn't already have a partner
         const user = await UserModel.findOne({ email, 'pair.partner': "No Partner", 'activeGoal.0.completed': false });
 
         if (!user) {
             return res.status(404).json({ message: "User not found or already paired." });
         }
 
+        // Find another user to pair with (who also hasn't been paired)
         const potentialPartner = await UserModel.findOne({
-            email: { $ne: email },
+            email: { $ne: email },  // Ensure it's not the same user
             'pair.partner': "No Partner",
             'pair.enable' : false,
             'activeGoal.0.completed': false
@@ -270,19 +291,24 @@ app.put("/users/setPair", async (req, res) => {
             return res.status(404).json({ message: "No available partner found." });
         }
 
+        // Pair both users
         user.pair.partner = potentialPartner.email;
         potentialPartner.pair.partner = user.email;
         user.pair.enable = true;
         potentialPartner.pair.enable = true;
+
+        // Save both users
         await user.save();
         await potentialPartner.save();
 
+        // Return the paired user's email
         res.status(200).json({ partner: potentialPartner });
     } catch (error) {
         res.status(500).json({ message: "Failed to pair users", error: error.message });
     }
 });
 
+// Delete a goal
 app.delete('/users/deleteGoal', async (req, res) => {
     const { email, goalTitle } = req.body;
     try {
@@ -301,6 +327,7 @@ app.delete('/users/deleteGoal', async (req, res) => {
     }
 });
 
+// Delete a task
 app.delete('/users/deleteTask', async (req, res) => {
     const { email, goalTitle, taskName } = req.body;
     try {
@@ -319,10 +346,12 @@ app.delete('/users/deleteTask', async (req, res) => {
     }
 });
 
+// Get all reminders for a user
 app.get('/users/getReminders/:email', async (req, res) => {
     try {
         const { email } = req.params;
 
+        // Find the user and return their reminders
         const user = await UserModel.findOne({ email });
         if (user) {
             res.status(200).json({ reminders: user.reminders });
@@ -339,6 +368,7 @@ app.post('/users/addReminder', async (req, res) => {
     try {
         const { email, month, day, year, reminder } = req.body;
 
+        // Ensure that month, day, and year are integers
         const parsedMonth = parseInt(month, 10);
         const parsedDay = parseInt(day, 10);
         const parsedYear = parseInt(year, 10);
@@ -347,6 +377,7 @@ app.post('/users/addReminder', async (req, res) => {
             return res.status(400).json({ message: "Invalid date values" });
         }
 
+        // Find the user and add the reminder
         const user = await UserModel.findOneAndUpdate(
             { email },
             { $push: { reminders: { month: parsedMonth, day: parsedDay, year: parsedYear, reminder } } },
@@ -363,10 +394,12 @@ app.post('/users/addReminder', async (req, res) => {
     }
 });
 
+// Remove a reminder
 app.delete('/users/removeReminder', async (req, res) => {
     try {
         const { email, month, day, year } = req.body;
 
+        // Find the user and remove the reminder
         const user = await UserModel.findOneAndUpdate(
             { email },
             { $pull: { reminders: { month, day, year } } },
@@ -383,6 +416,7 @@ app.delete('/users/removeReminder', async (req, res) => {
     }
 });
 
+// Update user information
 app.put('/users/updateUserInfo', async (req, res) => {
     const { firstName, lastName, email, currentEmail, currentPassword, newPassword } = req.body;
 
@@ -392,18 +426,21 @@ app.put('/users/updateUserInfo', async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Check if currentPassword is provided and verify it
         if (currentPassword) {
             const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
             if (!isPasswordMatch) {
                 return res.status(400).json({ message: "Current password is incorrect" });
             }
 
+            // Update the password if newPassword is provided
             if (newPassword) {
                 const hashedPassword = await bcrypt.hash(newPassword, 10);
                 user.password = hashedPassword;
             }
         }
 
+        // Update other user information
         if (firstName) user.firstName = firstName;
         if (lastName) user.lastName = lastName;
         if (email) user.email = email;
@@ -471,6 +508,7 @@ app.post('/api/send-message', async (req, res) => {
   }
 });
 
+// POST route to regenerate a bot message
 app.post('/api/regenerate', async (req, res) => {
   const { prompt } = req.body;
   
@@ -558,15 +596,7 @@ app.post('/timer/addTag', async (req, res) => {
             timer.tags.push(newTag);  // Add the new tag
             await timer.save();       // Save the updated document
             console.log(`Tag added: ${newTag}`);
-<<<<<<< HEAD
-<<<<<<< HEAD
-            res.status(200).send({message: 'Tag added successfully'});
-=======
             res.status(200).send({ message: 'Tag added successfully' });
->>>>>>> 8dcb439a0a9c860ce0625056d6eab611cfe4742e
-=======
-            res.status(200).send({ message: 'Tag added successfully' });
->>>>>>> 8dcb439a0a9c860ce0625056d6eab611cfe4742e
         } else {
             res.status(400).send({ message: 'Tag already exists' });
         }
@@ -603,18 +633,21 @@ app.post('/timer/addTag', async (req, res) => {
 //     }
 // });
 
+// Endpoint to retrieve streak and lastActivityDate by email
 app.get("/users/streak", async (req, res) => {
     try {
-        const email = req.query.email;
+        const email = req.query.email; // Get the email from the query parameter
         if (!email) {
             return res.status(400).json({ message: "Email is required" });
         }
 
+        // Find the user by their email
         const user = await UserModel.findOne({ email: email });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
+        // Return streak and lastActivityDate
         res.status(200).json({
             streak: user.streak,
             lastActivityDate: user.lastActivityDate
@@ -625,6 +658,7 @@ app.get("/users/streak", async (req, res) => {
     }
 });
 
+// Endpoint to modify streak and lastActivityDate by email
 app.put("/users/streak", async (req, res) => {
     try {
         const { email, streak, lastActivityDate } = req.body;
@@ -633,6 +667,7 @@ app.put("/users/streak", async (req, res) => {
             return res.status(400).json({ message: "Email, streak, and lastActivityDate are required" });
         }
 
+        // Find the user and update their streak and lastActivityDate
         const updatedUser = await UserModel.findOneAndUpdate(
             { email: email },
             { streak: streak, lastActivityDate: new Date(lastActivityDate) },
@@ -653,20 +688,22 @@ app.put("/users/streak", async (req, res) => {
     }
 });
 
+// Create transporter for Nodemailer
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'gmail', // Example using Gmail, you can adjust for other services or SMTP
     auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.EMAIL, // Your email address
+      pass: process.env.EMAIL_PASSWORD, // Your email password or app-specific password
     },
   });
   
+  // Contact form route
   app.post('/send-feedback', (req, res) => {
     const { name, email, message } = req.body;
   
     const mailOptions = {
       from: email,
-      to: process.env.RECEIVER_EMAIL,
+      to: process.env.RECEIVER_EMAIL, // Your email address to receive messages
       subject: `Contact form message from ${name}`,
       text: message,
     };
@@ -683,6 +720,8 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
+
+///generate flashcards using input
 app.post('/api/generateFlashcards', async (req, res) => {
     const { prompt } = req.body;
     const systemPrompt = `
