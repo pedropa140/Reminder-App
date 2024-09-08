@@ -10,85 +10,61 @@ import SettingsPopup from './SettingsPopup'; // Import the SettingsPopup compone
 import { updateUserInfo } from '../api';
 
 const PairPage = () => {
-    const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
-    const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
-    const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
+    const [firstName, setFirstName] = useState(sessionStorage.getItem('firstName'));
+    const [lastName, setLastName] = useState(sessionStorage.getItem('lastName'));
+    const [email, setEmail] = useState(sessionStorage.getItem('userEmail'));
     const [partner, setPartner] = useState(null);
     const [pairingStatus, setPairingStatus] = useState(false);
     const [userGoals, setUserGoals] = useState([]);
     const [partnerGoals, setPartnerGoals] = useState([]);
-    const [noPartnerMessage, setNoPartnerMessage] = useState("");  // State for no partner message
-    const [noGoalsMessage, setNoGoalsMessage] = useState("");      // State for no goals message
+    const [noPartnerMessage, setNoPartnerMessage] = useState("");
+    const [noGoalsMessage, setNoGoalsMessage] = useState("");
     const navigate = useNavigate();
-    const [darkMode, setDarkMode] = React.useState(false);
-    const [popupOpen, setPopupOpen] = React.useState(false);
-    const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [darkMode, setDarkMode] = useState(false);
+    const [popupOpen, setPopupOpen] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-    };
-
-    const handleLogoutClick = () => {
-        setPopupOpen(true);
-    };
-
+    const toggleDarkMode = () => setDarkMode(!darkMode);
+    const handleLogoutClick = () => setPopupOpen(true);
     const handleConfirmLogout = () => {
         sessionStorage.clear();
         setPopupOpen(false);
         navigate('/logged-out', { replace: true });
     };
+    const handleClosePopup = () => setPopupOpen(false);
+    const handleSettingsClick = () => setSettingsOpen(true);
+    const handleCloseSettings = () => setSettingsOpen(false);
 
-    const handleClosePopup = () => {
-        setPopupOpen(false);
-    };
-
-    const handleSettingsClick = () => {
-        setSettingsOpen(true); // Open the settings popup
-    };
-
-    const handleCloseSettings = () => {
-        setSettingsOpen(false); // Close the settings popup
-    };
-
-    // Function to handle user info update from SettingsPopup
     const handleUpdateUserInfo = async (updatedData) => {
         try {
-            // Make API call to update user information
             const response = await updateUserInfo(updatedData);
-
-            // Update the sessionStorage with the new data
             if (response.user) {
                 sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
                 sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
                 sessionStorage.setItem('userEmail', updatedData.newEmail || email);
-
-                // Update the local state to reflect the new data
                 setFirstName(updatedData.name.split(' ')[0]);
                 setLastName(updatedData.name.split(' ')[1] || '');
                 setEmail(updatedData.newEmail || email);
             }
-
-            setSettingsOpen(false); // Close the settings popup
+            setSettingsOpen(false);
         } catch (error) {
             console.error('Failed to update user info:', error);
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!sessionStorage.getItem('userEmail')) {
             navigate('/logged-out', { replace: true });
         }
     }, [navigate]);
 
     useEffect(() => {
-        // Fetch current pairing status and goals
         getPair(email)
             .then(response => {
                 const partnerData = response.data.partner;
                 setPartner(partnerData);
                 setPairingStatus(partnerData.pair.enable);
 
-                // Fetch goals for both the user and their partner
                 getGoals(email).then(response => {
                     const activeGoals = response.data.activeGoals;
                     setUserGoals(activeGoals);
@@ -119,8 +95,6 @@ const PairPage = () => {
             .then(response => {
                 setPartner(response.data.partner);
                 setPairingStatus(response.data.partner.pair.enable);
-
-                // Fetch partner goals after pairing
                 getGoals(response.data.partner.email).then(response => {
                     setPartnerGoals(response.data);
                 });
@@ -134,7 +108,6 @@ const PairPage = () => {
             });
     };
 
-    // Function to render tasks with completed ones crossed out
     const renderTasks = (tasks) => (
         <List>
             {tasks.map((task, index) => (
@@ -150,44 +123,44 @@ const PairPage = () => {
 
     return (
         <div className={darkMode ? 'app dark-mode' : 'app'}>
-            <nav className="navbar">
-                <div className="logo">
-                    <img src={logo} alt="Logo" />
-                </div>
-                <ul className="nav-links">
-                    <li><Link to="/user">HOME</Link></li>
-                    <li><Link to="/user/goal">TASKS</Link></li>
-                    <li><Link to="/user/pair">PAIR</Link></li>
-                    <li><Link to="/user/calendar">CALENDAR</Link></li>
-                    <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
-                    <li><Link to="/user/chatbot">CHATBOT</Link></li>
-                    <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
-                    <li><Link to="/user/contact">CONTACT</Link></li>
-                    <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
-                    <div className="settings-icon" onClick={handleSettingsClick}>
-                        <FaCog />
-                    </div>
-                </ul>
-                <div className="nav-actions">
-                    <div className="theme-toggle" onClick={toggleDarkMode}>
-                        {darkMode ? <FaSun /> : <FaMoon />}
-                    </div>
-                </div>
-            </nav>
-            <Container>
+      <nav className="navbar">
+        <div className="logo">
+          <img src={logo} alt="Logo" />
+        </div>
+        <ul className="nav-links">
+          <li><Link to="/user">HOME</Link></li>
+          <li><Link to="/user/goal">TASKS</Link></li>
+          <li><Link to="/user/pair">PAIR</Link></li>
+          <li><Link to="/user/calendar">CALENDAR</Link></li>
+          <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>          
+          <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
+          <li><Link to="/user/contact">CONTACT</Link></li>
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <div className="settings-icon" onClick={handleSettingsClick}>
+            <FaCog />
+          </div>
+        </ul>
+        <div className="nav-actions">
+          <div className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </div>
+        </div>
+      </nav>
+            <Container className="container">
                 <Box my={4}>
                     <Typography variant="h4" gutterBottom align="center">Pair with a Partner</Typography>
 
                     {/* No Partner Available Message */}
                     {noPartnerMessage && (
-                        <Typography variant="h6" color="error" align="center" paragraph>
+                        <Typography variant="h6" color="error" align="center" paragraph className="error-message">
                             {noPartnerMessage}
                         </Typography>
                     )}
 
                     {/* No Active Goals Message */}
                     {noGoalsMessage && (
-                        <Typography variant="h6" color="error" align="center" paragraph>
+                        <Typography variant="h6" color="error" align="center" paragraph className="error-message">
                             {noGoalsMessage}
                         </Typography>
                     )}
@@ -202,7 +175,7 @@ const PairPage = () => {
                     ) : (
                         !noPartnerMessage && !noGoalsMessage && (
                             <Box textAlign="center" mb={4}>
-                                <Button variant="contained" color="primary" onClick={handlePair}>
+                                <Button variant="contained" className="button" onClick={handlePair}>
                                     Pair with a Partner
                                 </Button>
                             </Box>
@@ -214,7 +187,7 @@ const PairPage = () => {
                         <Typography variant="h5" gutterBottom>Your Active Goals</Typography>
                         {userGoals.length > 0 ? (
                             userGoals.map((goal, index) => (
-                                <Card key={index} variant="outlined" sx={{ mb: 2 }}>
+                                <Card key={index} variant="outlined" className="card">
                                     <CardContent>
                                         <Typography variant="h6">{goal.title}</Typography>
                                         {renderTasks(goal.activeTasks)}
@@ -232,7 +205,7 @@ const PairPage = () => {
                             <Typography variant="h5" gutterBottom>Partner's Active Goals</Typography>
                             {partnerGoals.length > 0 ? (
                                 partnerGoals.map((goal, index) => (
-                                    <Card key={index} variant="outlined" sx={{ mb: 2 }}>
+                                    <Card key={index} variant="outlined" className="card">
                                         <CardContent>
                                             <Typography variant="h6">{goal.title}</Typography>
                                             {renderTasks(goal.activeTasks)}
@@ -251,15 +224,13 @@ const PairPage = () => {
                 onClose={handleClosePopup}
                 onConfirm={handleConfirmLogout}
             />
-
-            {/* Popup for settings with user info */}
             <SettingsPopup
                 open={settingsOpen}
                 onClose={handleCloseSettings}
                 firstName={firstName}
                 lastName={lastName}
                 email={email}
-                onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
+                onUpdateUserInfo={handleUpdateUserInfo}
             />
         </div>
     );

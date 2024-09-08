@@ -6,13 +6,14 @@ import '../App.css';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup'; 
-import { updateUserInfo, getStreakAndLastActivity } from '../api'; // Import the streak API call
+import { updateUserInfo, getStreakAndLastActivity } from '../api'; 
+import { FaTasks, FaCalendarAlt, FaClock, FaComments, FaFilePdf, FaPhoneAlt, FaSignOutAlt, FaCogs } from 'react-icons/fa'; // Added icons
 
 const UserPage = () => {
   const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
   const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
   const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
-  const [streak, setStreak] = React.useState(0); // State for user's streak
+  const [streak, setStreak] = React.useState(0); 
 
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = React.useState(false);
@@ -63,15 +64,13 @@ const UserPage = () => {
     }
   };
 
-  // Fetch streak information when the page loads
   React.useEffect(() => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
     } else {
-      // Call API to fetch streak data
       getStreakAndLastActivity(email)
         .then(({ streak }) => {
-          setStreak(streak); // Set the streak from the API response
+          setStreak(streak); 
         })
         .catch(error => {
           console.error('Error fetching streak information:', error);
@@ -106,37 +105,35 @@ const UserPage = () => {
         </div>
       </nav>
 
-      <Container maxWidth="lg" sx={{ mt: 8 }}>
-        <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Welcome to your dashboard, {firstName}!
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Paper elevation={6} sx={{ p: 4, mb: 4, backgroundColor: darkMode ? '#333' : '#fff' }}>
+          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
+            Welcome, {firstName}!
           </Typography>
-
-          {/* Display Streak Under the Welcome Message */}
-          <Typography variant="h6" align="center" gutterBottom>
+          <Typography variant="h6" align="center" gutterBottom sx={{ color: darkMode ? '#ddd' : '#555' }}>
             {streak > 0 
-              ? `You're on a ${streak}-day streak! Keep up the good work!` 
+              ? `You're on a ${streak}-day streak! Keep up the great work!` 
               : 'Start completing your goals to build a streak!'}
           </Typography>
-
-          <Typography variant="h6" align="center" gutterBottom>
+          <Typography variant="h6" align="center" gutterBottom sx={{ color: darkMode ? '#ddd' : '#555' }}>
             Email: {email}
           </Typography>
-          <Typography variant="body1" align="center" sx={{ mt: 2 }}>
+          <Typography variant="body1" align="center" sx={{ mt: 2, color: darkMode ? '#aaa' : '#666' }}>
             Use the taskbar above to navigate to the different tools available.
           </Typography>
         </Paper>
 
         <Grid container spacing={3}>
           {[
-            { label: 'Tasks', description: 'Manage and track your tasks here.', path: '/user/goal' },
-            { label: 'pair', description: 'Connects users with friends to collaborate on tasks together.', path: '/user/pair' },
-            { label: 'Calendar', description: 'View and manage your calendar events.', path: '/user/calendar' },
-            { label: 'Pomodoro Timer', description: 'Focus on your tasks with the Pomodoro timer.', path: '/user/pomodoro' },
-            { label: 'Chatbot', description: 'Get help and answers from the chatbot.', path: '/user/chatbot' },
-            { label: 'Contact', description: 'Get in touch with support or feedback.', path: '/user/contact' },
-            { label: 'Settings', description: 'Update your profile and application settings.', path: '', onClick: handleSettingsClick },
-            { label: 'Logout', description: 'Log out of your account securely.', path: '', onClick: handleLogoutClick }
+            { label: 'Tasks', description: 'Manage and track your tasks here.', path: '/user/goal', icon: <FaTasks /> },
+            { label: 'Pair', description: 'Connect with friends to collaborate on tasks.', path: '/user/pair', icon: <FaComments /> },
+            { label: 'Calendar', description: 'View and manage your calendar events.', path: '/user/calendar', icon: <FaCalendarAlt /> },
+            { label: 'Pomodoro Timer', description: 'Focus on your tasks with the Pomodoro timer.', path: '/user/pomodoro', icon: <FaClock /> },
+            { label: 'Chatbot', description: 'Get help and answers from the chatbot.', path: '/user/chatbot', icon: <FaComments /> },
+            { label: 'PDF Summarizer', description: 'Summarizes PDFs using Gemini AI.', path: '/user/pdfsummarizer', icon: <FaFilePdf /> },
+            { label: 'Contact', description: 'Get in touch with support or feedback.', path: '/user/contact', icon: <FaPhoneAlt /> },
+            { label: 'Logout', description: 'Log out of your account securely.', path: '', onClick: handleLogoutClick, icon: <FaSignOutAlt /> },
+            { label: 'Settings', description: 'Update your profile and application settings.', path: '', onClick: handleSettingsClick, icon: <FaCogs /> }
           ].map((item, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Button
@@ -154,13 +151,19 @@ const UserPage = () => {
                   flexDirection: 'column',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  transition: 'all 0.3s ease',
                   '&:hover': {
                     backgroundColor: '#155a8a',
+                    transform: 'scale(1.05)',
+                    boxShadow: 6,
                   },
                 }}
                 onClick={() => item.onClick ? item.onClick() : navigate(item.path)}
               >
-                <Typography variant="h6" color="#fff">{item.label}</Typography>
+                <Box sx={{ mb: 1, fontSize: '2rem' }}>
+                  {item.icon}
+                </Box>
+                <Typography variant="h6" color="#fff" sx={{ mb: 0.5 }}>{item.label}</Typography>
                 <Typography variant="body2" color="#fff">{item.description}</Typography>
               </Button>
             </Grid>
@@ -168,21 +171,19 @@ const UserPage = () => {
         </Grid>
       </Container>
 
-      {/* Popup for logout confirmation */}
       <LogoutPopup
-  open={popupOpen}
-  onClose={handleClosePopup}
-  onConfirm={handleConfirmLogout}
-/>
+        open={popupOpen}
+        onClose={handleClosePopup}
+        onConfirm={handleConfirmLogout}
+      />
 
-      {/* Popup for settings with user info */}
       <SettingsPopup
         open={settingsOpen}
         onClose={handleCloseSettings}
         firstName={firstName}
         lastName={lastName}
         email={email}
-        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
+        onUpdateUserInfo={handleUpdateUserInfo}
       />
     </div>
   );
