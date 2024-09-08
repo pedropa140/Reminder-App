@@ -213,14 +213,24 @@ app.get("/users/getPair/:email", async (req, res) => {
         const { email } = req.params;
         console.log('Fetching pair for user with email:', email);
         
+        // Find the user based on the email
         const user = await UserModel.findOne({ email });
 
-        if (user) {
-            console.log('Pair found:', user.pair);
-            res.status(200).json({ pair: user.pair });
+        // Check if the user has a partner
+        if (user && user.pair.partner !== "No Partner") {
+            const partnerEmail = user.pair.partner;
+            
+            // Find the partner's information
+            const partner = await UserModel.findOne({ email: partnerEmail });
+
+            if (partner) {
+                console.log('Partner found:', partner);
+                res.status(200).json({ partner: partner }); // Return partner's data
+            } else {
+                res.status(404).json({ message: "Partner not found" });
+            }
         } else {
-            console.log('User not found for email:', email);
-            res.status(404).json({ message: "User not found" });
+            res.status(404).json({ message: "User not paired or no partner available" });
         }
     } catch (error) {
         console.error('Failed to get pair:', error.message);
@@ -244,6 +254,7 @@ app.put("/users/setPair", async (req, res) => {
         const potentialPartner = await UserModel.findOne({
             email: { $ne: email },  // Ensure it's not the same user
             'pair.partner': "No Partner",
+            'pair.enable' : false,
             'activeGoal.0.completed': false
         });
 
@@ -254,13 +265,15 @@ app.put("/users/setPair", async (req, res) => {
         // Pair both users
         user.pair.partner = potentialPartner.email;
         potentialPartner.pair.partner = user.email;
+        user.pair.enable = true;
+        potentialPartner.pair.enable = true;
 
         // Save both users
         await user.save();
         await potentialPartner.save();
 
         // Return the paired user's email
-        res.status(200).json({ message: "Paired successfully", partner: potentialPartner.email });
+        res.status(200).json({ partner: potentialPartner });
     } catch (error) {
         res.status(500).json({ message: "Failed to pair users", error: error.message });
     }
@@ -410,6 +423,8 @@ app.put('/users/updateUserInfo', async (req, res) => {
         res.status(500).json({ message: "Failed to update user info", error: error.message });
     }
 });
+
+
 app.post("/gemini", async (req, res) => {
     const { history, message } = req.body;
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
