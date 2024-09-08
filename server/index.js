@@ -7,6 +7,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const TimerModel = require('./models/Timers');
+const nodemailer = require('nodemailer');
 app.use(express.json());
 app.use(cors());
 
@@ -635,6 +636,33 @@ app.put("/users/streak", async (req, res) => {
     }
 });
 
+// Create transporter for Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Example using Gmail, you can adjust for other services or SMTP
+    auth: {
+      user: process.env.EMAIL, // Your email address
+      pass: process.env.EMAIL_PASSWORD, // Your email password or app-specific password
+    },
+  });
+  
+  // Contact form route
+  app.post('/send-feedback', (req, res) => {
+    const { name, email, message } = req.body;
+  
+    const mailOptions = {
+      from: email,
+      to: process.env.RECEIVER_EMAIL, // Your email address to receive messages
+      subject: `Contact form message from ${name}`,
+      text: message,
+    };
+  
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).send({ message: 'Error sending email', error });
+      }
+      res.status(200).send({ message: 'Email sent successfully', info });
+    });
+  });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

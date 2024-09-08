@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaSun, FaMoon } from 'react-icons/fa';
+import { sendFeedback } from '../api'; // Import the function from api.js
 import logo from '../icon.png';
 import '../App.css';
 
@@ -10,16 +11,26 @@ const ContactPage_nonSignedIn = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('');
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Message:', message);
+    setStatus('Sending...');
+
+    try {
+      const response = await sendFeedback(name, email, message);
+      if (response) {
+        setStatus('Message sent successfully!');
+      } else {
+        setStatus('Failed to send message.');
+      }
+    } catch (error) {
+      setStatus('An error occurred.');
+    }
   };
 
   return (
@@ -131,6 +142,7 @@ const ContactPage_nonSignedIn = () => {
               Send
             </Button>
           </form>
+          {status && <Typography variant="body2" sx={{ mt: 2 }}>{status}</Typography>}
         </Box>
       </Container>
     </div>
