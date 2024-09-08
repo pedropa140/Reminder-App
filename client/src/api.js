@@ -268,3 +268,52 @@ const formatResponseText = (text) => {
       throw error;
     }
   };
+  //delete a tag
+//get all the tags
+//supposedly no set tag.
+export const deleteTag = async (email, tagName) => {
+    try{
+        const response = await axios.delete(`${API_URL}/timer/deleteTag`, {
+            data: { email, tagName }
+    });
+}
+    catch(error){
+        console.error('Error in deleting tag:', error);
+        throw error;
+    }
+};
+
+export const getAllTags = async (email) => {
+    try {
+        const response = await axios.get(`${API_URL}/users/getTags/${email}`);
+        return response;
+    }
+    catch (error){
+        console.error("Error in retrieving tags:", error);
+        throw error;
+    }
+};
+
+export const addTag = async (email, newTag) => {
+    try {
+        const response = await axios.post(`${API_URL}/timer/addTag`, { email, newTag: newTag.trim() });
+        return response.data;
+    } catch (error) {
+        console.error('Error in adding tag:', error);
+        throw error;
+    }
+};
+
+// export const handleAddTag = async (email, newTag) => {
+//     if (!newTag || newTag.trim() === '') {
+//         console.error('Tag cannot be empty');
+//         return;
+//     }
+
+//     try {
+//         await addTag(email, newTag.trim());  // Ensure newTag is trimmed before sending
+//         setNewTag('');  // Clear the input field after adding the tag
+//     } catch (error) {
+//         console.error('Error adding tag:', error);
+//     }
+// };
