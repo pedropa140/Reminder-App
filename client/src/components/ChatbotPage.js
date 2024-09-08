@@ -235,6 +235,13 @@ export default function ChatbotPage() {
                   msg.text
                 )}
               </div>
+              {/* Timestamp for each message */}
+              <div className="message-timestamp">
+                {new Date(msg.timestamp).toLocaleString([], {
+                  weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+                  hour: '2-digit', minute: '2-digit'
+                })}
+              </div>
               {msg.role === "bot" && !msg.feedbackGiven && (
                 <div className="feedback-buttons">
                   <IconButton
@@ -261,6 +268,7 @@ export default function ChatbotPage() {
           ))}
           {error && <div className="error-message">{error}</div>}
         </main>
+        
         <footer className="chat-input">
           <textarea
             value={userInput}

@@ -66,6 +66,13 @@
   flex-direction: column; /* Stack message text and feedback buttons vertically */
 }
 
+.message-timestamp {
+  font-size: 0.8rem;
+  color: #888; /* Light grey color */
+  margin-top: 4px;
+  text-align: right; /* Align the timestamp to the right */
+}
+
 /* Message text styling */
 .message-text {
   max-width: 70%;
