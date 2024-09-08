@@ -83,7 +83,7 @@ const UserPage = () => {
         <ul className="nav-links">
           <li><Link to="/user">HOME</Link></li>
           <li><Link to="/user/goal">TASKS</Link></li>
-          <li><Link to="/pair">PAIR</Link></li>
+          <li><Link to="/user/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
           <li><Link to="/user/chatbot">CHATBOT</Link></li>
@@ -116,6 +116,7 @@ const UserPage = () => {
         <Grid container spacing={3}>
           {[
             { label: 'Tasks', description: 'Manage and track your tasks here.', path: '/user/goal' },
+            { label: 'pair', description: 'Connects users with friends to collaborate on tasks together.', path: '/user/pair' },
             { label: 'Calendar', description: 'View and manage your calendar events.', path: '/user/calendar' },
             { label: 'Pomodoro Timer', description: 'Focus on your tasks with the Pomodoro timer.', path: '/user/pomodoro' },
             { label: 'Chatbot', description: 'Get help and answers from the chatbot.', path: '/user/chatbot' },

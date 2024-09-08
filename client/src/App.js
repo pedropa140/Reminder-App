@@ -25,13 +25,21 @@ function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/contact" element={<ContactPage_nonSignedIn />} />
         <Route path="/logged-out" element={<LoggedOutPage />} />
-        <Route path="/pair" element={<PairPage />} />
 
         <Route
           path="/user"
           element={
             <ProtectedRoute>
               <UserPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user/pair"
+          element={
+            <ProtectedRoute>
+              <PairPage />
             </ProtectedRoute>
           }
         />
