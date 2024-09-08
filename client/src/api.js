@@ -206,12 +206,12 @@ export const deleteUser = async (email) => {
 };
 const formatResponseText = (text) => {
     return text
+        .replace(/^# (.*?)$/gm, "<h1>$1</h1>")                // Convert '# Heading' to <h1>
+        .replace(/^## (.*?)$/gm, "<h2>$1</h2>")               // Convert '## Heading' to <h2>
         .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")                // Bold formatting
-        .replace(/^\* /gm, "<li>")                             // Convert '*' bullet points to list items
+        .replace(/^\* (.*?)$/gm, "<li>$1</li>")                // Convert '* item' to list item
         .replace(/<\/li>\s*<li>/g, "</li><li>")                // Properly close list items
         .replace(/<\/li>\s*$/g, "</li>")                       // Close last list item
-        .replace(/<li>/g, "<li>")                              // List item open tag
-        .replace(/<\/li>/g, "</li>")                           // List item close tag
         .replace(/^(<li>.*<\/li>\s*)+$/gm, "<ul>$&</ul>")      // Wrap multiple list items in <ul> tags
         .replace(/\n/g, "<br>");                               // Replace newlines with <br> tags
 };

@@ -204,9 +204,10 @@ export default function ChatbotPage() {
           <li><Link to="/user/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
-          <li><Link to="/user/chatbot">CHATBOT</Link></li>
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>          
+          <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
-          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
           <div className="settings-icon" onClick={handleSettingsClick}>
             <FaCog />
           </div>
