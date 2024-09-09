@@ -33,6 +33,7 @@ const PomodoroTimer = () => {
     const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
     const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
     //const email = sessionStorage.getItem('userEmail');
+    //const [selectedTag, setSelectedTag] = useState("");
     const [selectedTag, setSelectedTag] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pomQuality, setPomQuality] = useState(null);
@@ -288,7 +289,8 @@ const PomodoroTimer = () => {
       };
 
     const toggleTimer = async () => {
-    let objectiveTag = selectedTag;
+    //let objectiveTag = selectedTag;
+    //selectedTag = "Unlisted";
     if (!selectedTag){
         if(!tags.includes("Unlisted")){
             try{
@@ -300,9 +302,10 @@ const PomodoroTimer = () => {
                 return;
             }
         }
-        objectiveTag = "Unlisted";
+        setSelectedTag("Unlisted");
         
     }
+    
     setIsActive(!isActive);
     };
 
@@ -442,7 +445,7 @@ const PomodoroTimer = () => {
         value={selectedTag} 
         onChange={(e) => setSelectedTag(e.target.value)}
     >
-        <option value="">Select a tag</option>
+        {/* <option value="">Unlisted</option> */}
         {tags.map(tag => (
             <option key={tag} value={tag}>{tag}</option>
         ))}
