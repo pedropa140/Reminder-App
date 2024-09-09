@@ -16,6 +16,7 @@ import GoalPage from './components/Goal';
 import PairPage from './components/Pair';
 import CalendarPage from './components/Calendar';
 import ChatbotPage from './components/ChatbotPage';
+import Flashcards from './components/Flashcards';
 import PDFSummarizer from './components/PDFSummarizer';
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoute>
               <UserPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/flashcards"
+          element={
+            <ProtectedRoute>
+              <Flashcards />
             </ProtectedRoute>
           }
         />
@@ -79,6 +88,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
 
         <Route
           path="/user/chatbot"

@@ -368,6 +368,8 @@ export const updateStreakAndLastActivity = async (email, streak, lastActivityDat
 //     }
 // };
 
+
+
 //geenrating flashcards
 export const generateFlashcards = async (prompt) => {
     try {
@@ -384,15 +386,16 @@ export const generateFlashcards = async (prompt) => {
       }
   
       const data = await response.json();
-      const formattedResponse = formatResponseText(data.flashcards); // Apply formatting
   
-      return formattedResponse;
+      return data;
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
     }
   };
   
+
+
   export const sendFeedback = async (name, email, message) => {
     try {
       const response = await fetch('http://localhost:5000/send-feedback', {
