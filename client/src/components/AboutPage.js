@@ -6,7 +6,7 @@ import logo from '../icon.png';
 import kusumPhoto from '../assets/kusum.jpg'; // Placeholder for Kusum's photo
 import pedroPhoto from '../assets/pedro.jpg'; // Placeholder for Pedro's photo
 import yejuPhoto from '../assets/yeju.jpg'; // Placeholder for YeJu's photo
-import elizabethPhoto from '../assets/elizabeth.jpg'; // Placeholder for Elizabeth's photo
+import elizabethPhoto from '../assets/liz.png'; // Placeholder for Elizabeth's photo
 import '../App.css';
 
 const AboutPage = () => {
