@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import logo from '../icon.png';
 import '../App.css';
-//import TimerAlertPopup from './TimerAlertPopup';
+import TimerAlertPopup from './TimerAlertPopup';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
 import { deleteTag, getAllTags, addTag, updateUserInfo, logPomodoroSession } from '../api';
@@ -178,6 +178,7 @@ const PomodoroTimer = () => {
                     setAlertMessage('Break time is over! Time to get back to work.');
                     setTime(workDuration * 60);
                     setIsBreak(false);
+                    setOpenAlert(true);
                 } else {
                     setIsModalOpen(true);
                     // setAlertMessage('Work session is over! Time for a break.');
@@ -186,7 +187,7 @@ const PomodoroTimer = () => {
                     setTime(breakDuration * 60);
                     setIsBreak(true);
                 }
-                setOpenAlert(true);
+                
                 setIsActive(false);
             }
         }
@@ -332,15 +333,15 @@ const PomodoroTimer = () => {
         }
     };
 
-    // const handleCloseAlert = () => {
-    //     setOpenAlert(false);
-    //     setIsActive(true);
-    // };
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
+        setIsActive(true);
+    };
 
-    // const handleCancelAlert = () => {
-    //     setOpenAlert(false);
-    //     setIsActive(false);
-    // };
+    const handleCancelAlert = () => {
+        setOpenAlert(false);
+        setIsActive(false);
+    };
 
     // Function to pause the timer and open the logout popup
     const handleLogoutClick = () => {
@@ -468,16 +469,19 @@ const PomodoroTimer = () => {
                         Reset
                     </Button>
 
-                    {/* <TimerAlertPopup
-                        open={openAlert}
+                    <TimerAlertPopup
+                        open={openAlert} //i need to find where this is on the work side. so it doesn't open. KEEP FOR BREAK
                         onClose={handleCancelAlert}
                         alertMessage={alertMessage}
                         onConfirm={handleCloseAlert}
-                    /> */}
+                    />
                     <RatingAlert
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
-                        onSubmit={handleModalSubmit}
+                        onSubmit={() => {
+                            handleModalSubmit();
+                            handleCloseAlert();
+                          }}
                         />
                     
 
