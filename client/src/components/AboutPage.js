@@ -64,10 +64,10 @@ const AboutPage = () => {
             About Us
           </Typography>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 'normal' }}>
-            Welcome to ReminderApp!
+            Welcome to TaskBuddy!
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-            At ReminderApp, our mission is to help you stay organized and on top of your tasks with ease. We understand that managing daily responsibilities can be overwhelming, and we're here to simplify that process for you.
+            At TaskBuddy, our mission is to help you stay organized and on top of your tasks with ease. We understand that managing daily responsibilities can be overwhelming, and we're here to simplify that process for you.
           </Typography>
           <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
             Who We Are
@@ -80,7 +80,7 @@ const AboutPage = () => {
             What We Do
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-            ReminderApp is designed to be your personal assistant in managing tasks and reminders. Whether you're keeping track of important deadlines, planning daily activities, or simply trying to stay organized, our app provides a seamless experience to ensure you never miss a beat.
+            TaskBuddy is designed to be your personal assistant in managing tasks and reminders. Whether you're keeping track of important deadlines, planning daily activities, or simply trying to stay organized, our app provides a seamless experience to ensure you never miss a beat.
           </Typography>
           <ul style={{
             textAlign: 'left',
@@ -153,7 +153,7 @@ const AboutPage = () => {
             Send Feedback
           </Typography>
           <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.6 }}>
-            Thank you for choosing ReminderApp! We’re excited to be a part of your journey towards better organization and productivity. If you have any feedback or suggestions, please feel free to reach out to us. Your input helps us improve and deliver the best experience possible.
+            Thank you for choosing TaskBuddy! We’re excited to be a part of your journey towards better organization and productivity. If you have any feedback or suggestions, please feel free to reach out to us. Your input helps us improve and deliver the best experience possible.
           </Typography>
         </Box>
       </Container>
@@ -176,7 +176,7 @@ const AboutPage = () => {
       Meet the Creators
     </Typography>
     <Typography variant="body1" sx={{ mb: 4 }}>
-      Our team of dedicated developers and designers worked hard to bring ReminderApp to life. Here are the talented individuals who made it all happen:
+      Our team of dedicated developers and designers worked hard to bring TaskBuddy to life. Here are the talented individuals who made it all happen:
     </Typography>
     <Grid container spacing={4} sx={{ width: '100%' }}>
       {creators.map((creator, index) => (

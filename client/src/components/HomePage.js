@@ -30,8 +30,8 @@ const HomePage = () => {
       </nav>
       <main className={`hero-section ${darkMode ? 'dark-hero-content' : ''}`}>
         <div className={`hero-content ${darkMode ? 'dark-hero-box' : ''}`}>
-          <h1>Welcome to ReminderApp</h1>
-          <p>Your personal assistant to stay organized and on top of your tasks.</p>
+          <h1>Welcome to TaskBuddy</h1>
+          <p>Your personal assistant and buddy to stay organized and on top of your tasks.</p>
           <Link to="/signup" className="cta-button">Get Started</Link>
         </div>
       </main>
