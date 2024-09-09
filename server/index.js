@@ -724,6 +724,7 @@ app.listen(port, () => {
 ///generate flashcards using input
 app.post('/api/generateFlashcards', async (req, res) => {
     const { prompt } = req.body;
+    console.log("prompt", prompt);
     const systemPrompt = `
         You are a flashcard creator. Take in text and create exactly 10 flashcards from it.
         Each flashcard should have a front and back, both one sentence long.
@@ -739,11 +740,12 @@ app.post('/api/generateFlashcards', async (req, res) => {
         `
     
     try {
+      const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GENAI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent(systemPrompt+ prompt);
-      const response = await result.response;
-      const responseText = response.text();
-      const flashcards = JSON.parse(response.text())
-
+      const responseText = result.response.text();
+      const flashcards = JSON.parse(responseText).flashcards;
+    console.log(flashcards);
   
       res.json({ flashcards });
     } catch (error) {
