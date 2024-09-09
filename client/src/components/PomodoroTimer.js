@@ -9,7 +9,7 @@ import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
 import { deleteTag, getAllTags, addTag, updateUserInfo, logPomodoroSession } from '../api';
 import axios from 'axios';
-
+//import audio from '../mixkit-scanning-sci-fi-alarm-905.mp3'
 
 const PomodoroTimer = () => {
     const [workDuration, setWorkDuration] = useState(25);
@@ -545,6 +545,7 @@ const PomodoroTimer = () => {
                     </Box>
                 </Box>
             </Container>
+            {/* <audio ref={alarmSound} src="client/src/mixkit-scanning-sci-fi-alarm-905.mp3" preload="auto" /> */}
         </div>
     );
 };
