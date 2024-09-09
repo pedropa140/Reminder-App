@@ -286,7 +286,7 @@ app.put("/users/setPair", async (req, res) => {
             'pair.enable' : false,
             'activeGoal.0.completed': false
         });
-
+        console.log(potentialPartner);
         if (!potentialPartner) {
             return res.status(404).json({ message: "No available partner found." });
         }

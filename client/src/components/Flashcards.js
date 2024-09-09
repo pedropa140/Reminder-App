@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Container, TextField, Button, Typography, Box, Card, CardContent
 } from "@mui/material";
@@ -14,12 +13,12 @@ import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
 
-
 const Flashcards = () => {
   const [prompt, setPrompt] = useState("");
   const [flashcards, setFlashcards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [flippedCards, setFlippedCards] = useState({}); // Track flipped state for each card
 
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = React.useState(false);
@@ -33,6 +32,7 @@ const Flashcards = () => {
   const handleLogoutClick = () => {
     setPopupOpen(true);
   };
+
   const handleSettingsClick = () => {
     setSettingsOpen(true);
   };
@@ -52,6 +52,13 @@ const Flashcards = () => {
     }
   };
 
+  const handleCardClick = (index) => {
+    setFlippedCards((prevFlippedCards) => ({
+      ...prevFlippedCards,
+      [index]: !prevFlippedCards[index], // Toggle flip state for the clicked card
+    }));
+  };
+
   const settings = {
     dots: true,
     infinite: false,
@@ -61,8 +68,8 @@ const Flashcards = () => {
   };
 
   return (
-    <div  className={darkMode ? 'app dark-mode' : 'app'}>
-        <nav className="navbar">
+    <div className={darkMode ? 'app dark-mode' : 'app'}>
+      <nav className="navbar">
         <div className="logo">
           <img src={logo} alt="Logo" />
         </div>
@@ -87,53 +94,66 @@ const Flashcards = () => {
           </div>
         </div>
       </nav>
-        
-    <Container>
-      <Typography variant="h4" gutterBottom>Flashcard Generator</Typography>
-      <Box mb={2}>
-        <TextField
-          label="Enter Text for Flashcards"
-          multiline
-          rows={4}
-          fullWidth
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-      </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleGenerateFlashcards}
-        disabled={loading || !prompt}
-      >
-        {loading ? "Generating..." : "Generate Flashcards"}
-      </Button>
 
-      {error && <Typography color="error">{error}</Typography>}
-
-      {flashcards.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h5">Flashcards</Typography>
-          <Slider {...settings}>
-            {flashcards.map((card, index) => (
-              <Box key={index} px={2}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="h6">Flashcard {index + 1}</Typography>
-                    <Typography color="textSecondary">Front:</Typography>
-                    <Typography>{card.front}</Typography>
-                    <Typography color="textSecondary" mt={2}>Back:</Typography>
-                    <Typography>{card.back}</Typography>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))}
-          </Slider>
+      <Container>
+        <Typography variant="h4" gutterBottom>Flashcard Generator</Typography>
+        <Box mb={2}>
+          <TextField
+            label="Enter Text for Flashcards"
+            multiline
+            rows={4}
+            fullWidth
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
         </Box>
-      )}
-    </Container>
-    </div>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleGenerateFlashcards}
+          disabled={loading || !prompt}
+        >
+          {loading ? "Generating..." : "Generate Flashcards"}
+        </Button>
 
+        {error && <Typography color="error">{error}</Typography>}
+
+        {flashcards.length > 0 && (
+          <Box mt={4}>
+            <Typography variant="h5">Flashcards</Typography>
+            <Slider {...settings}>
+              {flashcards.map((card, index) => (
+                <Box key={index} px={2}>
+                  <div
+                    className={`flashcard-container`}
+                    onClick={() => handleCardClick(index)}
+                  >
+                    <div className={`flashcard ${flippedCards[index] ? 'flip' : ''}`}>
+                      <div className="flashcard-front">
+                        <Card variant="outlined">
+                          <CardContent>
+                            <Typography color="textSecondary">Front:</Typography>
+                            <Typography>{card.front}</Typography>
+                          </CardContent>
+                        </Card>
+                      </div>
+                      <div className="flashcard-back">
+                        <Card variant="outlined">
+                          <CardContent>
+                            <Typography color="textSecondary">Back:</Typography>
+                            <Typography>{card.back}</Typography>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+                </Box>
+              ))}
+            </Slider>
+          </Box>
+        )}
+      </Container>
+    </div>
   );
 };
 
