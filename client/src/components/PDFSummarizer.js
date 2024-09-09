@@ -162,6 +162,7 @@ const PDFSummarizer = () => {
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
           <li><Link to="/user/chatbot">CHATBOT</Link></li>          
           <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
+          <li><Link to="/user/flashcards">FLASHCARDS</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
           <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
           <div className="settings-icon" onClick={handleSettingsClick}>
