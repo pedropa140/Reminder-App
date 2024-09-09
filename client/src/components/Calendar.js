@@ -7,9 +7,9 @@ import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
 import './Calendar.css';
 import ReminderModal from './ReminderModal';
-import { addReminder, removeReminder, updateUserInfo } from '../api'; // Import API methods
+import { addReminder, updateUserInfo } from '../api';
 
-const daysOfWeek = ['Sunday', 'Monday', 'Tueday', 'Wednesday', 'Thusday', 'Friday', 'Saturday'];
+const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function generateCalendar(year, month) {
   const date = new Date(year, month);
@@ -17,7 +17,7 @@ function generateCalendar(year, month) {
   const firstDay = date.getDay();
   const lastDate = new Date(year, month + 1, 0).getDate();
 
-  let week = Array(firstDay).fill(null); // Create initial week with empty days
+  let week = Array(firstDay).fill(null);
 
   for (let day = 1; day <= lastDate; day++) {
     week.push(day);
@@ -27,10 +27,9 @@ function generateCalendar(year, month) {
     }
   }
 
-  // Fill the last week with null values if it has less than 7 days
   if (week.length > 0) {
     while (week.length < 7) {
-      week.push(null); // Add empty days to fill the week
+      week.push(null);
     }
     calendar.push(week);
   }
@@ -43,17 +42,17 @@ function CalendarPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [tasks, setTasks] = useState({});
-  const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
-  const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
-  const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
+  const [firstName, setFirstName] = useState(sessionStorage.getItem('firstName'));
+  const [lastName, setLastName] = useState(sessionStorage.getItem('lastName'));
+  const [email, setEmail] = useState(sessionStorage.getItem('userEmail'));
   
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = React.useState(false);
-  const [popupOpen, setPopupOpen] = React.useState(false);
-  const [settingsOpen, setSettingsOpen] = React.useState(false); // State for settings popup
+  const [darkMode, setDarkMode] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    setDarkMode(prevMode => !prevMode);
   };
 
   const handleLogoutClick = () => {
@@ -71,38 +70,34 @@ function CalendarPage() {
   };
 
   const handleSettingsClick = () => {
-    setSettingsOpen(true); // Open the settings popup
+    setSettingsOpen(true);
   };
 
   const handleCloseSettings = () => {
-    setSettingsOpen(false); // Close the settings popup
+    setSettingsOpen(false);
   };
 
-  // Function to handle user info update from SettingsPopup
   const handleUpdateUserInfo = async (updatedData) => {
     try {
-      // Make API call to update user information
       const response = await updateUserInfo(updatedData);
       
-      // Update the sessionStorage with the new data
       if (response.user) {
         sessionStorage.setItem('firstName', updatedData.name.split(' ')[0]);
         sessionStorage.setItem('lastName', updatedData.name.split(' ')[1] || '');
         sessionStorage.setItem('userEmail', updatedData.newEmail || email);
 
-        // Update the local state to reflect the new data
         setFirstName(updatedData.name.split(' ')[0]);
         setLastName(updatedData.name.split(' ')[1] || '');
         setEmail(updatedData.newEmail || email);
       }
 
-      setSettingsOpen(false); // Close the settings popup
+      setSettingsOpen(false);
     } catch (error) {
       console.error('Failed to update user info:', error);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!sessionStorage.getItem('userEmail')) {
       navigate('/logged-out', { replace: true });
     }
@@ -135,14 +130,13 @@ function CalendarPage() {
         [dateKey]: updatedTasks
     }));
 
-    // Save the reminder to the backend
     if (reminder) {
-        const month = parseInt(date.getMonth() + 1, 10); // Ensure month is an integer
-        const day = parseInt(date.getDate(), 10);        // Ensure day is an integer
-        const year = parseInt(date.getFullYear(), 10);   // Ensure year is an integer
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const year = date.getFullYear();
 
         try {
-            await addReminder(email, month, day, year, reminder); // Call to save reminder
+            await addReminder(email, month, day, year, reminder);
         } catch (error) {
             console.error('Error adding reminder:', error);
         }
@@ -167,10 +161,10 @@ function CalendarPage() {
           <li><Link to="/user/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
-          <li><Link to="/user/chatbot">CHATBOT</Link></li>          
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>
           <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
-          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
           <div className="settings-icon" onClick={handleSettingsClick}>
             <FaCog />
           </div>
@@ -224,15 +218,13 @@ function CalendarPage() {
         onClose={handleClosePopup}
         onConfirm={handleConfirmLogout}
       />
-
-      {/* Popup for settings with user info */}
       <SettingsPopup
         open={settingsOpen}
         onClose={handleCloseSettings}
         firstName={firstName}
         lastName={lastName}
         email={email}
-        onUpdateUserInfo={handleUpdateUserInfo} // Pass the update handler
+        onUpdateUserInfo={handleUpdateUserInfo}
       />
     </div>
   );

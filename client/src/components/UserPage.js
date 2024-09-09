@@ -5,15 +5,15 @@ import logo from '../icon.png';
 import '../App.css';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import LogoutPopup from './LogoutPopup';
-import SettingsPopup from './SettingsPopup'; 
-import { updateUserInfo, getStreakAndLastActivity } from '../api'; 
+import SettingsPopup from './SettingsPopup';
+import { updateUserInfo, getStreakAndLastActivity } from '../api';
 import { FaTasks, FaCalendarAlt, FaClock, FaComments, FaFilePdf, FaPhoneAlt, FaSignOutAlt, FaCogs } from 'react-icons/fa'; // Added icons
 
 const UserPage = () => {
   const [firstName, setFirstName] = React.useState(sessionStorage.getItem('firstName'));
   const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
   const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
-  const [streak, setStreak] = React.useState(0); 
+  const [streak, setStreak] = React.useState(0);
 
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = React.useState(false);
@@ -70,7 +70,7 @@ const UserPage = () => {
     } else {
       getStreakAndLastActivity(email)
         .then(({ streak }) => {
-          setStreak(streak); 
+          setStreak(streak);
         })
         .catch(error => {
           console.error('Error fetching streak information:', error);
@@ -90,10 +90,10 @@ const UserPage = () => {
           <li><Link to="/user/pair">PAIR</Link></li>
           <li><Link to="/user/calendar">CALENDAR</Link></li>
           <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
-          <li><Link to="/user/chatbot">CHATBOT</Link></li>          
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>
           <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
           <li><Link to="/user/contact">CONTACT</Link></li>
-          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
           <div className="settings-icon" onClick={handleSettingsClick}>
             <FaCog />
           </div>
@@ -107,12 +107,16 @@ const UserPage = () => {
 
       <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Paper elevation={6} sx={{ p: 4, mb: 4, backgroundColor: darkMode ? '#333' : '#fff' }}>
-          <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h3" align="center" gutterBottom sx={{
+            fontWeight: 'bold',
+            color: darkMode ? '#fff' : '#000'
+          }}>
             Welcome, {firstName}!
           </Typography>
+
           <Typography variant="h6" align="center" gutterBottom sx={{ color: darkMode ? '#ddd' : '#555' }}>
-            {streak > 0 
-              ? `You're on a ${streak}-day streak! Keep up the great work!` 
+            {streak > 0
+              ? `You're on a ${streak}-day streak! Keep up the great work!`
               : 'Start completing your goals to build a streak!'}
           </Typography>
           <Typography variant="h6" align="center" gutterBottom sx={{ color: darkMode ? '#ddd' : '#555' }}>

@@ -1,4 +1,5 @@
 /* General container for chat */
+/* Chat container styling */
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -7,9 +8,15 @@
   margin: 0;
   border-radius: 0; /* No border-radius for full height */
   box-shadow: none; /* Remove shadow if not needed */
-  background-color: #f9f9f9;
   overflow: hidden; /* Hide overflow to prevent scrollbars */
+  background-color: #f9f9f9; /* Default light mode background */
 }
+
+/* Dark mode specific styles for chat container */
+.chat-container.dark-mode {
+  background-color: #1e1e1e; /* Dark grey background for dark mode */
+}
+
 
 /* Header styling */
 .chat-header {
@@ -21,6 +28,12 @@
   justify-content: space-between;
   align-items: center;
   height: 60px; /* Set a fixed height for the header */
+}
+
+/* Dark mode specific styles for chat header */
+.chat-header.dark-mode {
+  background-color: #333; /* Dark header background */
+  color: #e0e0e0; /* Light text color for dark mode */
 }
 
 /* Title text */
@@ -46,6 +59,13 @@
   flex: 1; /* Takes up remaining space */
   padding: 16px;
   overflow-y: auto;
+  background-color: #f9f9f9; /* Light grey background for light mode */
+}
+
+/* Dark mode specific styles for chat messages */
+.chat-messages.dark-mode {
+  background-color: #2c2c2c; /* Dark background for messages */
+  color: #e0e0e0; /* Light text color for dark mode */
 }
 
 /* Message container styling */
@@ -66,14 +86,7 @@
   flex-direction: column; /* Stack message text and feedback buttons vertically */
 }
 
-.message-timestamp {
-  font-size: 0.8rem;
-  color: #888; /* Light grey color */
-  margin-top: 4px;
-  text-align: right; /* Align the timestamp to the right */
-}
-
-/* Message text styling */
+/* Dark mode specific styles for message text */
 .message-text {
   max-width: 70%;
   padding: 10px;
@@ -93,7 +106,25 @@
   color: #666;
 }
 
-/* Feedback buttons container styling */
+/* Dark mode specific styles for bot text */
+.bot-text.dark-mode {
+  background-color: #444; /* Dark background for bot messages */
+  color: #e0e0e0; /* Light text color for dark mode */
+}
+
+/* Message timestamp styling */
+.message-timestamp {
+  font-size: 0.8rem;
+  color: #888; /* Light grey color for timestamps in light mode */
+  margin-top: 4px;
+  text-align: right; /* Align the timestamp to the right */
+}
+
+/* Dark mode specific styles for message timestamps */
+.message-timestamp.dark-mode {
+  color: #fff; /* White color for timestamps in dark mode */
+}
+
 /* Feedback buttons container styling */
 .feedback-buttons {
   display: flex;
@@ -118,15 +149,28 @@
   text-align: center;
 }
 
+/* Dark mode specific styles for error messages */
+.error-message.dark-mode {
+  color: #f44336; /* Light red color for error messages */
+}
+
+/* Chat input styling */
 .chat-input {
   padding: 16px;
-  background-color: #ffffff;
+  background-color: #ffffff; /* White background for light mode */
   border-radius: 0; /* Remove border-radius */
   display: flex;
   align-items: center; /* Align items vertically centered */
   border-top: 1px solid #ddd; /* Optional: add a border to separate input area */
 }
 
+/* Dark mode specific styles for chat input */
+.chat-input.dark-mode {
+  background-color: #333; /* Dark background for input area */
+  border-top: 1px solid #444; /* Darker border for dark mode */
+}
+
+/* Input textarea styling */
 .input-textarea {
   width: 100%;
   padding: 10px;
@@ -140,14 +184,16 @@
   justify-content: center; /* Center text horizontally */
 }
 
-.textarea::placeholder {
-  display: flex;
-  align-items: center; /* Center text vertically */
-  justify-content: center;
+/* Dark mode specific styles for input textarea */
+.input-textarea.dark-mode {
+  background-color: #444; /* Dark background for textarea */
+  border: 1px solid #555; /* Darker border for dark mode */
+  color: #e0e0e0; /* Light text color for dark mode */
 }
+
 /* Send button styling */
 .send-button {
-  padding: 0px  20px; /* Horizontal padding */
+  padding: 0px 20px; /* Horizontal padding */
   border: none;
   border-radius: 8px;
   background-color: #4a90e2;
@@ -160,6 +206,12 @@
   justify-content: center; /* Center text horizontally */
 }
 
+/* Dark mode specific styles for send button */
+.send-button.dark-mode {
+  background-color: #357abd; /* Darker background color for dark mode */
+}
+
+/* Send button hover effect */
 .send-button:hover {
   background-color: #357abd;
 }

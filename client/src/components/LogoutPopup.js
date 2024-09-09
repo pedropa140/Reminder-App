@@ -1,7 +1,9 @@
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, useTheme } from '@mui/material';
 
 const LogoutPopup = ({ open, onClose, onConfirm }) => {
+  const theme = useTheme(); // Get the current theme
+
   if (!open) return null;
 
   return (
@@ -21,7 +23,7 @@ const LogoutPopup = ({ open, onClose, onConfirm }) => {
     >
       <Box
         sx={{
-          backgroundColor: 'white',
+          backgroundColor: theme.palette.background.paper, // Use theme background color
           borderRadius: '8px',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
           padding: '24px',
@@ -30,7 +32,13 @@ const LogoutPopup = ({ open, onClose, onConfirm }) => {
           position: 'relative',
         }}
       >
-        <Typography variant="h6" sx={{ marginBottom: '16px' }}>
+        <Typography
+          variant="h6"
+          sx={{ 
+            marginBottom: '16px',
+            color: theme.palette.mode === 'dark' ? 'white' : 'black' // Conditional text color
+          }}
+        >
           Are you sure you want to log out?
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>

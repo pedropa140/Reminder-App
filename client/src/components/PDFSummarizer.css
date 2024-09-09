@@ -12,9 +12,16 @@
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  background-color: #f9f9f9; /* Optional background color */
+  background-color: #f9f9f9; /* Default background color for light mode */
 }
 
+/* Dark mode styles */
+.app.dark-mode .summary-container {
+  background-color: #333; /* Dark grey background for dark mode */
+  color: #fff;            /* White text color for dark mode */
+}
+
+/* Loading message */
 .loading-message {
   padding: 20px;
 }

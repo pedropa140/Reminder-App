@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaTrash } from 'react-icons/fa'; // Import trash bin icon from react-icons
 import { addReminder, removeReminder, getReminders } from '../api'; // Import API methods
 import './ReminderModal.css'; // Import the CSS file
 
@@ -8,15 +9,13 @@ function ReminderModal({ date, tasks, onClose, onSave }) {
     const [dailyReminders, setDailyReminders] = useState([]);
 
     // Extract the day, month, and year from the Date object
-    const day = date.getDate(); // Get day of the month
-    const monthIndex = date.getMonth(); // Get month index (0-based)
-    const year = date.getFullYear(); // Get full year
+    const day = date.getDate();
+    const monthIndex = date.getMonth();
+    const year = date.getFullYear();
 
-    // Arrays for full names of days and months
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    // Get the full name of the day and month
     const dayName = daysOfWeek[date.getDay()];
     const monthName = monthsOfYear[monthIndex];
 
@@ -24,21 +23,15 @@ function ReminderModal({ date, tasks, onClose, onSave }) {
         const fetchReminders = async () => {
             try {
                 const response = await getReminders(userEmail);
-                console.log('API Response:', response); // Log the entire response object
 
                 if (response && response.reminders) {
-                    console.log('Response Data:', response.reminders); // Log response data
-
-                    // Access reminders from response.data
                     const reminders = response.reminders;
-                    console.log('Reminders Array:', reminders); // Log the reminders array
 
                     if (Array.isArray(reminders)) {
                         const todayReminders = reminders.filter(rem => 
                             rem.month === monthIndex + 1 && rem.day === day && rem.year === year
                         );
 
-                        console.log('Today\'s Reminders:', todayReminders); // Log today's reminders
                         setDailyReminders(todayReminders);
                     } else {
                         console.error('Reminders is not an array:', reminders);
@@ -59,7 +52,7 @@ function ReminderModal({ date, tasks, onClose, onSave }) {
             await addReminder(userEmail, monthIndex + 1, day, year, reminder);
             const updatedReminders = [...dailyReminders, { reminder, month: monthIndex + 1, day, year }];
             setDailyReminders(updatedReminders);
-            onSave(date, [...tasks, reminder]); // Update tasks and close modal
+            onSave(date, [...tasks, reminder]);
         } catch (error) {
             console.error('Failed to add reminder:', error);
         }
@@ -71,7 +64,7 @@ function ReminderModal({ date, tasks, onClose, onSave }) {
             await removeReminder(userEmail, monthIndex + 1, day, year);
             const updatedReminders = dailyReminders.filter(rem => rem.reminder !== reminderToRemove);
             setDailyReminders(updatedReminders);
-            onSave(date, tasks.filter(task => task !== reminderToRemove)); // Update tasks and close modal
+            onSave(date, tasks.filter(task => task !== reminderToRemove));
         } catch (error) {
             console.error('Failed to remove reminder:', error);
         }
@@ -94,9 +87,12 @@ function ReminderModal({ date, tasks, onClose, onSave }) {
                     {dailyReminders.length > 0 ? (
                         <ul>
                             {dailyReminders.map((rem, index) => (
-                                <li key={index}>
+                                <li key={index} className="reminder-item">
                                     {rem.reminder}
-                                    <button onClick={() => handleRemove(rem.reminder)}>Remove</button>
+                                    <FaTrash 
+                                        className="remove-icon" 
+                                        onClick={() => handleRemove(rem.reminder)} 
+                                    />
                                 </li>
                             ))}
                         </ul>
