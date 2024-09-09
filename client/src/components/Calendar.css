@@ -1,126 +1,121 @@
-  /* Calendar.css */
-  .calendar {
-    font-family: Arial, sans-serif;
-    width: 100%; /* Full width */
-    max-width: 1200px; /* Optional: Max width for larger screens */
-    margin: 20px auto;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+/* Default light theme styles */
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --header-bg: #87ceeb; /* Light blue */
+  --day-bg: #f0f0f0;
+  --current-day-bg: #add8e6; /* Lighter blue */
+  --day-hover-bg: #e0e0e0;
+  --border-color: #ddd;
+  --task-indicator-bg: red;
+}
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f4f4f4;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .header h2 {
-    margin: 0;
-    font-size: 1.2em;
-    font-weight: normal;
-    text-align: center; /* Center the month and year heading */
-  }
-  
-  /* New styles for buttons */
-  .header button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s, box-shadow 0.3s;
-  }
-  
-  .header button:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .header button:active {
-    background-color: #004085;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .header button.prev {
-    margin-right: auto; /* Aligns the Prev button to the left */
-  }
-  
-  .header button.next {
-    margin-left: auto; /* Aligns the Next button to the right */
-  }
+/* Dark theme styles */
+.dark-mode {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --header-bg: #4682b4; /* Darker blue */
+  --day-bg: #1e1e1e;
+  --current-day-bg: #87ceeb; /* Light blue */
+  --day-hover-bg: #303030;
+  --border-color: #333;
+  --task-indicator-bg: #ff5722;
+}
 
-  .days-of-week {
-    display: flex;
-    background-color: #f4f4f4;
-    border-bottom: 1px solid #ddd;
-  }
+/* General styling for the calendar */
+.app {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
 
-  .day-header {
-    flex: 1; /* Each header takes up equal space */
-    height: 80px; /* Larger height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #333;
-    border-right: 1px solid #ddd;
-    box-sizing: border-box; /* Ensure borders are included in width */
-  }
+.calendar {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
 
-  .day-header:last-child {
-    border-right: none;
-  }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--header-bg);
+  color: var(--text-color);
+}
 
-  .calendar-grid {
-    display: flex;
-    flex-direction: column;
-  }
+.header button {
+  background-color: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
 
-  .week {
-    display: flex;
-    flex: 1; /* Ensure weeks take up full height */
-  }
+.header button:hover {
+  color: var(--current-day-bg);
+}
 
-  .day {
-    flex: 1; /* Each day takes up equal space */
-    height: 80px; /* Larger height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 1px solid #ddd;
-    transition: background-color 0.3s;
-    position: relative;
-    box-sizing: border-box; /* Ensure borders are included in width */
-  }
+.days-of-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: var(--header-bg);
+}
 
-  .day:hover {
-    background-color: #f0f0f0;
-  }
+.day-header {
+  text-align: center;
+  padding: 0.5rem;
+  color: var(--text-color);
+  font-weight: bold;
+  border-bottom: 1px solid var(--border-color);
+}
 
-  .task-indicator {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    font-size: 16px; /* Larger font size */
-    color: red;
-  }
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  flex: 1;
+}
 
-  .day.highlighted {
-    background-color: #ffeb3b; /* Highlight color */
-    font-weight: bold;
-  }
+.week {
+  display: contents;
+}
 
-  /* Calendar.css */
-  .day.current-day {
-    background-color: #4caf50; /* Highlight color for the current day */
-    color: white; /* Text color for the current day */
-    font-weight: bold; /* Bold text for the current day */
-  }
+.day {
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--day-bg);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.day:hover {
+  background-color: var(--day-hover-bg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.day.current-day {
+  background-color: var(--current-day-bg);
+  color: var(--text-color);
+}
+
+.task-indicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: var(--task-indicator-bg);
+  color: #fff;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

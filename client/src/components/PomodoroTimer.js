@@ -4,10 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import logo from '../icon.png';
 import '../App.css';
-import TimerAlertPopup from './TimerAlertPopup';
+//import TimerAlertPopup from './TimerAlertPopup';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
-import { deleteTag, getAllTags, addTag, updateUserInfo } from '../api';
+import { deleteTag, getAllTags, addTag, updateUserInfo, logPomodoroSession } from '../api';
 import axios from 'axios';
 
 
@@ -33,7 +33,9 @@ const PomodoroTimer = () => {
     const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
     const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
     //const email = sessionStorage.getItem('userEmail');
-
+    const [selectedTag, setSelectedTag] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [pomQuality, setPomQuality] = useState(null);
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
     };
@@ -141,6 +143,24 @@ const PomodoroTimer = () => {
     };
 
 
+    // const promptUserForQuality = () => {
+    //     const rating = window.prompt("How productive did you feel? (0 - 5)");
+    //     // const ratingMap = {
+    //     // A: 5,
+    //     // B: 4,
+    //     // C: 3,
+    //     // D: 2,
+    //     // E: 1,
+    //     // F: 0
+
+    //     // };
+    //     return rating || -1; //Default to -1 if rating is 
+    // }
+    const handleModalSubmit = (rating) => {
+        setPomQuality(rating);
+        logPomodoroSession(email, workDuration * 60, selectedTag, rating);
+      };
+
     useEffect(() => {
         let interval = null;
 
@@ -152,12 +172,16 @@ const PomodoroTimer = () => {
             if (time === 0) {
                 clearInterval(interval);
                 playAlarm();
+
                 if (isBreak) {
                     setAlertMessage('Break time is over! Time to get back to work.');
                     setTime(workDuration * 60);
                     setIsBreak(false);
                 } else {
-                    setAlertMessage('Work session is over! Time for a break.');
+                    setIsModalOpen(true);
+                    // setAlertMessage('Work session is over! Time for a break.');
+                    // const pomQuality = promptUserForQuality();
+                    // logPomodoroSession(email,workDuration*60, selectedTag || 'Unlisted', pomQuality)
                     setTime(breakDuration * 60);
                     setIsBreak(true);
                 }
@@ -169,8 +193,117 @@ const PomodoroTimer = () => {
         return () => clearInterval(interval);
     }, [isActive, time, isBreak, workDuration, breakDuration]);
 
-    const toggleTimer = () => {
-        setIsActive(!isActive);
+    const RatingAlert = ({ isOpen, onClose, onSubmit }) => {
+        const [rating, setRating] = useState("");
+      
+        const handleSubmit = () => {
+          onSubmit(rating);
+          onClose();
+        };
+      
+        if (!isOpen) return null;
+      
+        return (
+            <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Grey overlay with transparency
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1200, // Ensure it appears above other elements
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+          padding: '24px',
+          textAlign: 'center',
+          minWidth: '300px',
+        }}
+      >
+        <Typography variant="h3" sx={{ marginBottom: '16px' }}>
+            Work session is over! Time for a break.
+        </Typography>
+        <Typography variant="p" sx={{ marginBottom: '16px' }}>
+            Please rate your productivity (0 - 5):
+        </Typography>
+        <input
+                type="number"
+                min="0"
+                max="5"
+                value={rating}
+                onChange={(e) => setRating(e.target.value)}
+                placeholder="Enter your rating"
+              />
+        
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            sx={{ borderRadius: '8px' }}
+          >
+            OK
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={onClose}
+            sx={{ borderRadius: '8px' }}
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+
+
+            
+        //   <div className="modal">
+        //     <div className="modal-content">
+        //       <h3>Work session is over! Time for a break.</h3>
+        //       <p>Please rate your productivity (0 - 5):</p>
+        //       <input
+        //         type="number"
+        //         min="0"
+        //         max="5"
+        //         value={rating}
+        //         onChange={(e) => setRating(e.target.value)}
+        //         placeholder="Enter your rating"
+        //       />
+        //       <div className="modal-buttons">
+        //         <button onClick={handleSubmit}>OK</button>
+        //         <button onClick={onClose}>Cancel</button>
+        //       </div>
+        //     </div>
+        //   </div>
+        );
+      };
+
+    const toggleTimer = async () => {
+    let objectiveTag = selectedTag;
+    if (!selectedTag){
+        if(!tags.includes("Unlisted")){
+            try{
+                await addTag(email,"Unlisted");
+                setTags([...tags, "Unlisted"]);
+            }
+            catch (error){
+                console.error("Error creating 'Unlisted' tag:")
+                return;
+            }
+        }
+        objectiveTag = "Unlisted";
+        
+    }
+    setIsActive(!isActive);
     };
 
     const resetTimer = () => {
@@ -196,15 +329,15 @@ const PomodoroTimer = () => {
         }
     };
 
-    const handleCloseAlert = () => {
-        setOpenAlert(false);
-        setIsActive(true);
-    };
+    // const handleCloseAlert = () => {
+    //     setOpenAlert(false);
+    //     setIsActive(true);
+    // };
 
-    const handleCancelAlert = () => {
-        setOpenAlert(false);
-        setIsActive(false);
-    };
+    // const handleCancelAlert = () => {
+    //     setOpenAlert(false);
+    //     setIsActive(false);
+    // };
 
     // Function to pause the timer and open the logout popup
     const handleLogoutClick = () => {
@@ -234,30 +367,32 @@ const PomodoroTimer = () => {
     };
 
     return (
+        
         <div className={darkMode ? 'app dark-mode' : 'app'}>
-            <nav className="navbar">
-                <div className="logo">
-                    <img src={logo} alt="Logo" />
-                </div>
-                <ul className="nav-links">
-                    <li><Link to="/user">HOME</Link></li>
-                    <li><Link to="/user/goal">TASKS</Link></li>
-                    <li><Link to="/user/pair">PAIR</Link></li>
-                    <li><Link to="/user/calendar">CALENDAR</Link></li>
-                    <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
-                    <li><Link to="/user/chatbot">CHATBOT</Link></li>
-                    <li><Link to="/user/contact">CONTACT</Link></li>
-                    <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>
-                    <div className="settings-icon" onClick={handleSettingsClick}>
-                        <FaCog />
-                    </div>
-                </ul>
-                <div className="nav-actions">
-                    <div className="theme-toggle" onClick={toggleDarkMode}>
-                        {darkMode ? <FaSun /> : <FaMoon />}
-                    </div>
-                </div>
-            </nav>
+      <nav className="navbar">
+        <div className="logo">
+          <img src={logo} alt="Logo" />
+        </div>
+        <ul className="nav-links">
+          <li><Link to="/user">HOME</Link></li>
+          <li><Link to="/user/goal">TASKS</Link></li>
+          <li><Link to="/user/pair">PAIR</Link></li>
+          <li><Link to="/user/calendar">CALENDAR</Link></li>
+          <li><Link to="/user/pomodoro">POMODORO TIMER</Link></li>
+          <li><Link to="/user/chatbot">CHATBOT</Link></li>          
+          <li><Link to="/user/pdfsummarizer">PDF SUMMARIZER</Link></li>
+          <li><Link to="/user/contact">CONTACT</Link></li>
+          <li><a href="#" onClick={handleLogoutClick}>LOGOUT</a></li>          
+          <div className="settings-icon" onClick={handleSettingsClick}>
+            <FaCog />
+          </div>
+        </ul>
+        <div className="nav-actions">
+          <div className="theme-toggle" onClick={toggleDarkMode}>
+            {darkMode ? <FaSun /> : <FaMoon />}
+          </div>
+        </div>
+      </nav>
             <Container maxWidth="sm" sx={{ mt: 8 }}>
                 <Box
                     sx={{
@@ -300,6 +435,19 @@ const PomodoroTimer = () => {
                         />
                     </Box>
 
+                    <div className="tag-selector">
+    <label htmlFor="tagDropdown">Select Tag: </label>
+    <select 
+        id="tagDropdown" 
+        value={selectedTag} 
+        onChange={(e) => setSelectedTag(e.target.value)}
+    >
+        <option value="">Select a tag</option>
+        {tags.map(tag => (
+            <option key={tag} value={tag}>{tag}</option>
+        ))}
+    </select>
+</div>
                     <Button
                         variant="contained"
                         color="primary"
@@ -317,12 +465,18 @@ const PomodoroTimer = () => {
                         Reset
                     </Button>
 
-                    <TimerAlertPopup
+                    {/* <TimerAlertPopup
                         open={openAlert}
                         onClose={handleCancelAlert}
                         alertMessage={alertMessage}
                         onConfirm={handleCloseAlert}
-                    />
+                    /> */}
+                    <RatingAlert
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onSubmit={handleModalSubmit}
+                        />
+                    
 
                     {/* Popup for logout confirmation */}
                     <LogoutPopup
