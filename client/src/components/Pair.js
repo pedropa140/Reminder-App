@@ -59,21 +59,21 @@ const PairPage = () => {
     }, [navigate]);
 
     useEffect(() => {
+        getGoals(email).then(response => {
+            const activeGoals = response.data.activeGoals;
+            setUserGoals(activeGoals);
+            if (activeGoals.length === 0) {
+                setNoGoalsMessage("You must have an active goal to pair with someone.");
+            } else {
+                setNoGoalsMessage("");
+            }
+        })
         getPair(email)
             .then(response => {
                 const partnerData = response.data.partner;
                 setPartner(partnerData);
                 setPairingStatus(partnerData.pair.enable);
 
-                getGoals(email).then(response => {
-                    const activeGoals = response.data.activeGoals;
-                    setUserGoals(activeGoals);
-                    if (activeGoals.length === 0) {
-                        setNoGoalsMessage("You must have an active goal to pair with someone.");
-                    } else {
-                        setNoGoalsMessage("");
-                    }
-                });
 
                 if (partnerData && partnerData.email) {
                     getGoals(partnerData.email).then(response => {
@@ -81,6 +81,7 @@ const PairPage = () => {
                     });
                 }
             })
+
             .catch(error => {
                 if (error.response && error.response.status === 404) {
                     setNoPartnerMessage("There are no active partners to pair with at the moment.");
