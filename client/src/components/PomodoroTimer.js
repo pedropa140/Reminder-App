@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon, FaCog } from 'react-icons/fa';
 import logo from '../icon.png';
 import '../App.css';
-//import TimerAlertPopup from './TimerAlertPopup';
+import TimerAlertPopup from './TimerAlertPopup';
 import LogoutPopup from './LogoutPopup';
 import SettingsPopup from './SettingsPopup';
 import { deleteTag, getAllTags, addTag, updateUserInfo, logPomodoroSession } from '../api';
@@ -33,6 +33,7 @@ const PomodoroTimer = () => {
     const [lastName, setLastName] = React.useState(sessionStorage.getItem('lastName'));
     const [email, setEmail] = React.useState(sessionStorage.getItem('userEmail'));
     //const email = sessionStorage.getItem('userEmail');
+    //const [selectedTag, setSelectedTag] = useState("");
     const [selectedTag, setSelectedTag] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pomQuality, setPomQuality] = useState(null);
@@ -177,6 +178,7 @@ const PomodoroTimer = () => {
                     setAlertMessage('Break time is over! Time to get back to work.');
                     setTime(workDuration * 60);
                     setIsBreak(false);
+                    setOpenAlert(true);
                 } else {
                     setIsModalOpen(true);
                     // setAlertMessage('Work session is over! Time for a break.');
@@ -185,7 +187,7 @@ const PomodoroTimer = () => {
                     setTime(breakDuration * 60);
                     setIsBreak(true);
                 }
-                setOpenAlert(true);
+                
                 setIsActive(false);
             }
         }
@@ -288,7 +290,8 @@ const PomodoroTimer = () => {
       };
 
     const toggleTimer = async () => {
-    let objectiveTag = selectedTag;
+    //let objectiveTag = selectedTag;
+    //selectedTag = "Unlisted";
     if (!selectedTag){
         if(!tags.includes("Unlisted")){
             try{
@@ -300,9 +303,10 @@ const PomodoroTimer = () => {
                 return;
             }
         }
-        objectiveTag = "Unlisted";
+        setSelectedTag("Unlisted");
         
     }
+    
     setIsActive(!isActive);
     };
 
@@ -329,15 +333,15 @@ const PomodoroTimer = () => {
         }
     };
 
-    // const handleCloseAlert = () => {
-    //     setOpenAlert(false);
-    //     setIsActive(true);
-    // };
+    const handleCloseAlert = () => {
+        setOpenAlert(false);
+        setIsActive(true);
+    };
 
-    // const handleCancelAlert = () => {
-    //     setOpenAlert(false);
-    //     setIsActive(false);
-    // };
+    const handleCancelAlert = () => {
+        setOpenAlert(false);
+        setIsActive(false);
+    };
 
     // Function to pause the timer and open the logout popup
     const handleLogoutClick = () => {
@@ -443,7 +447,7 @@ const PomodoroTimer = () => {
         value={selectedTag} 
         onChange={(e) => setSelectedTag(e.target.value)}
     >
-        <option value="">Select a tag</option>
+        {/* <option value="">Unlisted</option> */}
         {tags.map(tag => (
             <option key={tag} value={tag}>{tag}</option>
         ))}
@@ -466,16 +470,19 @@ const PomodoroTimer = () => {
                         Reset
                     </Button>
 
-                    {/* <TimerAlertPopup
-                        open={openAlert}
+                    <TimerAlertPopup
+                        open={openAlert} //i need to find where this is on the work side. so it doesn't open. KEEP FOR BREAK
                         onClose={handleCancelAlert}
                         alertMessage={alertMessage}
                         onConfirm={handleCloseAlert}
-                    /> */}
+                    />
                     <RatingAlert
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
-                        onSubmit={handleModalSubmit}
+                        onSubmit={() => {
+                            handleModalSubmit();
+                            handleCloseAlert();
+                          }}
                         />
                     
 
